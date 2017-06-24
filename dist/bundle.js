@@ -33859,6 +33859,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(11);
@@ -33873,6 +33875,10 @@ var _Messages = __webpack_require__(585);
 
 var _Messages2 = _interopRequireDefault(_Messages);
 
+var _cuiConnect = __webpack_require__(590);
+
+var _cuiConnect2 = _interopRequireDefault(_cuiConnect);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -33880,6 +33886,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CuiMsg = (0, _cuiConnect2.default)(function (state) {
+  return { msgs: state.msgs };
+})(_Messages2.default);
 
 var TypingMessage = function (_Component) {
   _inherits(TypingMessage, _Component);
@@ -34030,6 +34040,11 @@ var CuiManager = function (_Component3) {
   }
 
   _createClass(CuiManager, [{
+    key: 'getChildContext',
+    value: function getChildContext() {
+      return { state: _extends({}, this.state, { msgs: this.props.msgs }) };
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.setMode(this.props.currentMsg);
@@ -34060,7 +34075,7 @@ var CuiManager = function (_Component3) {
       return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(_Messages2.default, { msgs: this.props.msgs }),
+        _react2.default.createElement(CuiMsg, null),
         this.state.choiceMsg ? _react2.default.createElement(Choice, { msg: this.state.choiceMsg }) : null,
         this.state.isTyping ? _react2.default.createElement(TypingMessage, null) : null,
         this.props.children
@@ -34076,6 +34091,9 @@ CuiManager.propTypes = {
   currentMsg: _propTypes2.default.object,
   delay: _propTypes2.default.number,
   children: _propTypes2.default.element.isRequired
+};
+CuiManager.childContextTypes = {
+  state: _propTypes2.default.object.isRequired
 };
 exports.default = CuiManager;
 
@@ -34268,6 +34286,70 @@ if(false) {
 	// When the module is disposed, remove the <style> tags
 	module.hot.dispose(function() { update(); });
 }
+
+/***/ }),
+/* 590 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(11);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(134);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var cuiConnect = function cuiConnect() {
+  var mergeProps = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function (ctx) {
+    return ctx;
+  };
+  return function (Cmp) {
+    var _class, _temp;
+
+    return _temp = _class = function (_Component) {
+      _inherits(CuiCmp, _Component);
+
+      function CuiCmp() {
+        _classCallCheck(this, CuiCmp);
+
+        return _possibleConstructorReturn(this, (CuiCmp.__proto__ || Object.getPrototypeOf(CuiCmp)).apply(this, arguments));
+      }
+
+      _createClass(CuiCmp, [{
+        key: 'render',
+        value: function render() {
+          var props = _extends({}, this.props, mergeProps(this.context.state));
+          return _react2.default.createElement(Cmp, props);
+        }
+      }]);
+
+      return CuiCmp;
+    }(_react.Component), _class.contextTypes = {
+      state: _propTypes2.default.object.isRequired
+    }, _temp;
+  };
+};
+
+exports.default = cuiConnect;
 
 /***/ })
 ],[581]);

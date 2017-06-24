@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Messages from './Messages';
+import cuiConnect from '../cuiConnect';
+
+const CuiMsg = cuiConnect(state => ({ msgs: state.msgs }))(Messages);
 
 class TypingMessage extends Component {
   render() {
@@ -93,6 +96,14 @@ class CuiManager extends Component {
     };
   }
 
+  static childContextTypes = {
+    state: PropTypes.object.isRequired,
+  };
+
+  getChildContext() {
+    return { state: { ...this.state, msgs: this.props.msgs } };
+  }
+
   componentDidMount() {
     this.setMode(this.props.currentMsg);
   }
@@ -118,7 +129,7 @@ class CuiManager extends Component {
   render() {
     return (
       <div>
-        <Messages msgs={this.props.msgs} />
+        <CuiMsg />
         {this.state.choiceMsg ? <Choice msg={this.state.choiceMsg} /> : null}
         {this.state.isTyping ? <TypingMessage /> : null}
         {this.props.children}

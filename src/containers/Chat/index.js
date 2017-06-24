@@ -66,7 +66,6 @@ class Chat extends Component {
     if (!this.props.messages.length) {
       return null;
     }
-    console.log('got msgs', this.props.messages);
     return <ChatBot steps={this.props.messages} />;
   }
 }
