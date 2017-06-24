@@ -1,0 +1,4 @@
+node_modules
+result.json
+.result.json.swp
+.DS_Store
