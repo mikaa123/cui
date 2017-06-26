@@ -5,24 +5,27 @@ const messages = (
   state = [
     {
       id: '1',
+      type: 'bot',
       msg: 'Hello',
     },
     {
       id: '11',
+      type: 'bot',
       msg: 'Sup',
     },
     {
       id: '2',
       msg: 'hi',
-      user: true,
+      type: 'user',
     },
-    // {
-    //   id: 'c',
-    //   choices: [{ id: 'one', val: 'one' }, { id: 'two', val: 'two' }],
-    //   cb(choice) {
-    //     console.log('The use chose', choice);
-    //   },
-    // },
+    {
+      id: 'c',
+      type: 'choice',
+      choices: [{ id: 'one', val: 'one' }, { id: 'two', val: 'two' }],
+      cb(choice) {
+        console.log('The use chose', choice);
+      },
+    },
   ],
   action
 ) => {

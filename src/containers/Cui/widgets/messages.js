@@ -2,24 +2,24 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import cuiConnect from '../core/cuiConnect';
 
-const CuiBusyTyping = cuiConnect(state => ({ isBusy: state.isBusy }))(
-  class BusyTyping extends Component {
-    static propTypes = {
-      isBusy: PropTypes.bool.isRequired,
-    };
+const DEFAULT_DELAY = 1000;
 
-    render() {
-      if (this.props.isBusy) {
-        return (
-          <div className="cui-typing">
-            ...
-          </div>
-        );
-      }
-      return null;
+class BusyTyping extends Component {
+  static propTypes = {
+    isTyping: PropTypes.bool.isRequired,
+  };
+
+  render() {
+    if (this.props.isTyping) {
+      return (
+        <div className="cui-typing">
+          ...
+        </div>
+      );
     }
+    return null;
   }
-);
+}
 
 class MessageBot extends Component {
   static propTypes = {
@@ -57,6 +57,10 @@ class Messages extends Component {
     delay: PropTypes.number,
   };
 
+  state = {
+    isTyping: false,
+  };
+
   componentDidMount() {
     this.handleMsg(this.props.currentMsg);
   }
@@ -71,29 +75,37 @@ class Messages extends Component {
     if (!msg) {
       return;
     }
-    let delay = this.props.delay || 1000;
-    if (msg.user) {
+    if (msg.type !== 'user' && msg.type !== 'bot') {
+      return;
+    }
+    let delay = this.props.delay || DEFAULT_DELAY;
+    this.setState({ isTyping: true });
+    if (msg.type === 'user') {
       delay = 0;
     }
     setTimeout(() => {
+      this.setState({ isTyping: false });
       this.props.processMsg(msg);
     }, delay);
   }
 
   renderMessages() {
     return this.props.msgs.map(m => {
-      if (m.user) {
+      if (m.type === 'user') {
         return <MessageUser msg={m} key={m.id} />;
+      } else if (m.type === 'bot') {
+        return <MessageBot msg={m} key={m.id} />;
       }
-      return <MessageBot msg={m} key={m.id} />;
+      return null;
     });
   }
 
   render() {
+    console.log(this.state.isTyping);
     return (
       <div>
         {this.renderMessages()}
-        <CuiBusyTyping />
+        <BusyTyping isTyping={this.state.isTyping} />
       </div>
     );
   }

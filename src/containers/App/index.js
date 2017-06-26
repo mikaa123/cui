@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { addMessages } from './../../actions';
 import { Cui } from '../Cui';
-import { Messages } from '../Cui/widgets';
+import { Messages, Choices } from '../Cui/widgets';
 
 class ChatBox extends Component {
   static propTypes = {
@@ -61,6 +61,7 @@ class App extends Component {
     return (
       <Cui msgs={this.props.msgs}>
         <Messages delay={500} />
+        <Choices addMessage={msg => this.props.dispatch(addMessages([msg]))} />
         <ConnectedChatbox />
       </Cui>
     );

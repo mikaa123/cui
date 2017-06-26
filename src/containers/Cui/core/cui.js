@@ -11,6 +11,7 @@ class Cui extends Component {
     super(props);
     this.msgQueue = [...props.msgs];
     this.isProcessing = false;
+    this.processedIDs = [];
     this.state = {
       isBusy: false,
       msgs: [],
@@ -39,12 +40,12 @@ class Cui extends Component {
   }
 
   isProcessed(id) {
-    return this.state.msgs.some(p => p.id === id);
+    return this.processedIDs[id];
   }
 
   processQueue() {
     if (!this.msgQueue.length) {
-      this.setState({ isBusy: false });
+      this.setState({ currentMsg: null, isBusy: false });
       return;
     }
     if (this.isProcessing) {
@@ -60,6 +61,7 @@ class Cui extends Component {
 
   processMsg = msg => {
     if (msg) {
+      this.processedIDs[msg.id] = true;
       this.setState({
         msgs: this.state.msgs.concat(msg),
       });

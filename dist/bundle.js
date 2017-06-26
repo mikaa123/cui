@@ -14430,10 +14430,15 @@ var App = function (_Component2) {
   _createClass(App, [{
     key: 'render',
     value: function render() {
+      var _this3 = this;
+
       return _react2.default.createElement(
         _Cui.Cui,
         { msgs: this.props.msgs },
         _react2.default.createElement(_widgets.Messages, { delay: 500 }),
+        _react2.default.createElement(_widgets.Choices, { addMessage: function addMessage(msg) {
+            return _this3.props.dispatch((0, _actions.addMessages)([msg]));
+          } }),
         _react2.default.createElement(ConnectedChatbox, null)
       );
     }
@@ -14472,14 +14477,23 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var messages = function messages() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [{
     id: '1',
+    type: 'bot',
     msg: 'Hello'
   }, {
     id: '11',
+    type: 'bot',
     msg: 'Sup'
   }, {
     id: '2',
     msg: 'hi',
-    user: true
+    type: 'user'
+  }, {
+    id: 'c',
+    type: 'choice',
+    choices: [{ id: 'one', val: 'one' }, { id: 'two', val: 'two' }],
+    cb: function cb(choice) {
+      console.log('The use chose', choice);
+    }
   }];
   var action = arguments[1];
 
@@ -33530,8 +33544,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _class, _temp;
-
 var _react = __webpack_require__(11);
 
 var _react2 = _interopRequireDefault(_react);
@@ -33552,9 +33564,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var CuiBusyTyping = (0, _cuiConnect2.default)(function (state) {
-  return { isBusy: state.isBusy };
-})((_temp = _class = function (_Component) {
+var DEFAULT_DELAY = 1000;
+
+var BusyTyping = function (_Component) {
   _inherits(BusyTyping, _Component);
 
   function BusyTyping() {
@@ -33566,7 +33578,7 @@ var CuiBusyTyping = (0, _cuiConnect2.default)(function (state) {
   _createClass(BusyTyping, [{
     key: 'render',
     value: function render() {
-      if (this.props.isBusy) {
+      if (this.props.isTyping) {
         return _react2.default.createElement(
           'div',
           { className: 'cui-typing' },
@@ -33578,9 +33590,11 @@ var CuiBusyTyping = (0, _cuiConnect2.default)(function (state) {
   }]);
 
   return BusyTyping;
-}(_react.Component), _class.propTypes = {
-  isBusy: _propTypes2.default.bool.isRequired
-}, _temp));
+}(_react.Component);
+
+BusyTyping.propTypes = {
+  isTyping: _propTypes2.default.bool.isRequired
+};
 
 var MessageBot = function (_Component2) {
   _inherits(MessageBot, _Component2);
@@ -33640,9 +33654,19 @@ var Messages = function (_Component4) {
   _inherits(Messages, _Component4);
 
   function Messages() {
+    var _ref;
+
+    var _temp, _this4, _ret;
+
     _classCallCheck(this, Messages);
 
-    return _possibleConstructorReturn(this, (Messages.__proto__ || Object.getPrototypeOf(Messages)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this4 = _possibleConstructorReturn(this, (_ref = Messages.__proto__ || Object.getPrototypeOf(Messages)).call.apply(_ref, [this].concat(args))), _this4), _this4.state = {
+      isTyping: false
+    }, _temp), _possibleConstructorReturn(_this4, _ret);
   }
 
   _createClass(Messages, [{
@@ -33665,11 +33689,16 @@ var Messages = function (_Component4) {
       if (!msg) {
         return;
       }
-      var delay = this.props.delay || 1000;
-      if (msg.user) {
+      if (msg.type !== 'user' && msg.type !== 'bot') {
+        return;
+      }
+      var delay = this.props.delay || DEFAULT_DELAY;
+      this.setState({ isTyping: true });
+      if (msg.type === 'user') {
         delay = 0;
       }
       setTimeout(function () {
+        _this5.setState({ isTyping: false });
         _this5.props.processMsg(msg);
       }, delay);
     }
@@ -33677,20 +33706,23 @@ var Messages = function (_Component4) {
     key: 'renderMessages',
     value: function renderMessages() {
       return this.props.msgs.map(function (m) {
-        if (m.user) {
+        if (m.type === 'user') {
           return _react2.default.createElement(MessageUser, { msg: m, key: m.id });
+        } else if (m.type === 'bot') {
+          return _react2.default.createElement(MessageBot, { msg: m, key: m.id });
         }
-        return _react2.default.createElement(MessageBot, { msg: m, key: m.id });
+        return null;
       });
     }
   }, {
     key: 'render',
     value: function render() {
+      console.log(this.state.isTyping);
       return _react2.default.createElement(
         'div',
         null,
         this.renderMessages(),
-        _react2.default.createElement(CuiBusyTyping, null)
+        _react2.default.createElement(BusyTyping, { isTyping: this.state.isTyping })
       );
     }
   }]);
@@ -33729,6 +33761,15 @@ Object.defineProperty(exports, 'Messages', {
   enumerable: true,
   get: function get() {
     return _interopRequireDefault(_messages).default;
+  }
+});
+
+var _choices = __webpack_require__(597);
+
+Object.defineProperty(exports, 'Choices', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_choices).default;
   }
 });
 
@@ -33778,6 +33819,7 @@ var Cui = function (_Component) {
 
     _this.processMsg = function (msg) {
       if (msg) {
+        _this.processedIDs[msg.id] = true;
         _this.setState({
           msgs: _this.state.msgs.concat(msg)
         });
@@ -33788,6 +33830,7 @@ var Cui = function (_Component) {
 
     _this.msgQueue = [].concat(_toConsumableArray(props.msgs));
     _this.isProcessing = false;
+    _this.processedIDs = [];
     _this.state = {
       isBusy: false,
       msgs: [],
@@ -33819,15 +33862,13 @@ var Cui = function (_Component) {
   }, {
     key: 'isProcessed',
     value: function isProcessed(id) {
-      return this.state.msgs.some(function (p) {
-        return p.id === id;
-      });
+      return this.processedIDs[id];
     }
   }, {
     key: 'processQueue',
     value: function processQueue() {
       if (!this.msgQueue.length) {
-        this.setState({ isBusy: false });
+        this.setState({ currentMsg: null, isBusy: false });
         return;
       }
       if (this.isProcessing) {
@@ -33863,6 +33904,118 @@ Cui.childContextTypes = {
   processMsg: _propTypes2.default.func.isRequired
 };
 exports.default = Cui;
+
+/***/ }),
+/* 597 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(11);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(134);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _cuiConnect = __webpack_require__(591);
+
+var _cuiConnect2 = _interopRequireDefault(_cuiConnect);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Choice = function (_Component) {
+  _inherits(Choice, _Component);
+
+  function Choice() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    _classCallCheck(this, Choice);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Choice.__proto__ || Object.getPrototypeOf(Choice)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      choices: []
+    }, _this.handleChoice = function (c) {
+      console.log('pushing choice!');
+      _this.props.addMessage({
+        id: c.id,
+        msg: c.val,
+        type: 'user'
+      });
+      _this.props.processMsg(_this.props.currentMsg);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
+
+  _createClass(Choice, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var msg = nextProps.currentMsg;
+      if (!msg || msg.type !== 'choice') {
+        this.setState({ choices: [] });
+        return;
+      }
+      if (msg.choices) {
+        this.setState({ choices: msg.choices });
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      if (!this.state.choices.length) {
+        return null;
+      }
+      return _react2.default.createElement(
+        'div',
+        { className: 'cui-choice' },
+        'Choose:',
+        this.state.choices.map(function (c) {
+          return _react2.default.createElement(
+            'p',
+            { key: c.id, onClick: function onClick() {
+                return _this2.handleChoice(c);
+              } },
+            c.val
+          );
+        })
+      );
+    }
+  }]);
+
+  return Choice;
+}(_react.Component);
+
+Choice.propTypes = {
+  currentMsg: _propTypes2.default.object,
+  processMsg: _propTypes2.default.func.isRequired,
+  addMessage: _propTypes2.default.func.isRequired
+};
+exports.default = (0, _cuiConnect2.default)(function (state, processMsg) {
+  return {
+    currentMsg: state.currentMsg,
+    processMsg: processMsg
+  };
+})(Choice);
 
 /***/ })
 ],[581]);
