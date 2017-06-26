@@ -14350,11 +14350,11 @@ var _propTypes = __webpack_require__(134);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _actions = __webpack_require__(163);
+
 var _Cui = __webpack_require__(587);
 
-var _Cui2 = _interopRequireDefault(_Cui);
-
-var _actions = __webpack_require__(163);
+var _widgets = __webpack_require__(594);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -14431,8 +14431,9 @@ var App = function (_Component2) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        _Cui2.default,
-        { msgs: this.props.msgs, delay: 500 },
+        _Cui.Cui,
+        { msgs: this.props.msgs },
+        _react2.default.createElement(_widgets.Messages, { delay: 500 }),
         _react2.default.createElement(ConnectedChatbox, null)
       );
     }
@@ -14477,13 +14478,8 @@ var messages = function messages() {
     msg: 'Sup'
   }, {
     id: '2',
-    msg: 'hi'
-  }, {
-    id: 'c',
-    choices: [{ id: 'one', val: 'one' }, { id: 'two', val: 'two' }],
-    cb: function cb(choice) {
-      console.log('The use chose', choice);
-    }
+    msg: 'hi',
+    user: true
   }];
   var action = arguments[1];
 
@@ -18600,62 +18596,7 @@ module.exports = __webpack_require__(38);
 
 /***/ }),
 /* 428 */,
-/* 429 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function() {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		var result = [];
-		for(var i = 0; i < this.length; i++) {
-			var item = this[i];
-			if(item[2]) {
-				result.push("@media " + item[2] + "{" + item[1] + "}");
-			} else {
-				result.push(item[1]);
-			}
-		}
-		return result.join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-
-/***/ }),
+/* 429 */,
 /* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -33362,258 +33303,7 @@ module.exports = function (str) {
 
 
 /***/ }),
-/* 575 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-var stylesInDom = {},
-	memoize = function(fn) {
-		var memo;
-		return function () {
-			if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-			return memo;
-		};
-	},
-	isOldIE = memoize(function() {
-		return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-	}),
-	getHeadElement = memoize(function () {
-		return document.head || document.getElementsByTagName("head")[0];
-	}),
-	singletonElement = null,
-	singletonCounter = 0,
-	styleElementsInsertedAtTop = [];
-
-module.exports = function(list, options) {
-	if(typeof DEBUG !== "undefined" && DEBUG) {
-		if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-	// By default, add <style> tags to the bottom of <head>.
-	if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-	var styles = listToStyles(list);
-	addStylesToDom(styles, options);
-
-	return function update(newList) {
-		var mayRemove = [];
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-		if(newList) {
-			var newStyles = listToStyles(newList);
-			addStylesToDom(newStyles, options);
-		}
-		for(var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-			if(domStyle.refs === 0) {
-				for(var j = 0; j < domStyle.parts.length; j++)
-					domStyle.parts[j]();
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-}
-
-function addStylesToDom(styles, options) {
-	for(var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-		if(domStyle) {
-			domStyle.refs++;
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles(list) {
-	var styles = [];
-	var newStyles = {};
-	for(var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-		if(!newStyles[id])
-			styles.push(newStyles[id] = {id: id, parts: [part]});
-		else
-			newStyles[id].parts.push(part);
-	}
-	return styles;
-}
-
-function insertStyleElement(options, styleElement) {
-	var head = getHeadElement();
-	var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-	if (options.insertAt === "top") {
-		if(!lastStyleElementInsertedAtTop) {
-			head.insertBefore(styleElement, head.firstChild);
-		} else if(lastStyleElementInsertedAtTop.nextSibling) {
-			head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			head.appendChild(styleElement);
-		}
-		styleElementsInsertedAtTop.push(styleElement);
-	} else if (options.insertAt === "bottom") {
-		head.appendChild(styleElement);
-	} else {
-		throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-	}
-}
-
-function removeStyleElement(styleElement) {
-	styleElement.parentNode.removeChild(styleElement);
-	var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-	if(idx >= 0) {
-		styleElementsInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement(options) {
-	var styleElement = document.createElement("style");
-	styleElement.type = "text/css";
-	insertStyleElement(options, styleElement);
-	return styleElement;
-}
-
-function createLinkElement(options) {
-	var linkElement = document.createElement("link");
-	linkElement.rel = "stylesheet";
-	insertStyleElement(options, linkElement);
-	return linkElement;
-}
-
-function addStyle(obj, options) {
-	var styleElement, update, remove;
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-		styleElement = singletonElement || (singletonElement = createStyleElement(options));
-		update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-	} else if(obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function") {
-		styleElement = createLinkElement(options);
-		update = updateLink.bind(null, styleElement);
-		remove = function() {
-			removeStyleElement(styleElement);
-			if(styleElement.href)
-				URL.revokeObjectURL(styleElement.href);
-		};
-	} else {
-		styleElement = createStyleElement(options);
-		update = applyToTag.bind(null, styleElement);
-		remove = function() {
-			removeStyleElement(styleElement);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle(newObj) {
-		if(newObj) {
-			if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-				return;
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag(styleElement, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (styleElement.styleSheet) {
-		styleElement.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = styleElement.childNodes;
-		if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-		if (childNodes.length) {
-			styleElement.insertBefore(cssNode, childNodes[index]);
-		} else {
-			styleElement.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag(styleElement, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		styleElement.setAttribute("media", media)
-	}
-
-	if(styleElement.styleSheet) {
-		styleElement.styleSheet.cssText = css;
-	} else {
-		while(styleElement.firstChild) {
-			styleElement.removeChild(styleElement.firstChild);
-		}
-		styleElement.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink(linkElement, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	if(sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = linkElement.href;
-
-	linkElement.href = URL.createObjectURL(blob);
-
-	if(oldSrc)
-		URL.revokeObjectURL(oldSrc);
-}
-
-
-/***/ }),
+/* 575 */,
 /* 576 */,
 /* 577 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -33726,378 +33416,8 @@ module.exports = __webpack_require__(240);
 /* 582 */,
 /* 583 */,
 /* 584 */,
-/* 585 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(11);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__(134);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-__webpack_require__(589);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var MessageBot = function (_Component) {
-  _inherits(MessageBot, _Component);
-
-  function MessageBot() {
-    _classCallCheck(this, MessageBot);
-
-    return _possibleConstructorReturn(this, (MessageBot.__proto__ || Object.getPrototypeOf(MessageBot)).apply(this, arguments));
-  }
-
-  _createClass(MessageBot, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { className: 'cui-message cui-message--bot' },
-        this.props.msg.msg
-      );
-    }
-  }]);
-
-  return MessageBot;
-}(_react.Component);
-
-MessageBot.propTypes = {
-  msg: _propTypes2.default.object.isRequired
-};
-
-var MessageUser = function (_Component2) {
-  _inherits(MessageUser, _Component2);
-
-  function MessageUser() {
-    _classCallCheck(this, MessageUser);
-
-    return _possibleConstructorReturn(this, (MessageUser.__proto__ || Object.getPrototypeOf(MessageUser)).apply(this, arguments));
-  }
-
-  _createClass(MessageUser, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { className: 'cui-message cui-message--user' },
-        this.props.msg.msg
-      );
-    }
-  }]);
-
-  return MessageUser;
-}(_react.Component);
-
-MessageUser.propTypes = {
-  msg: _propTypes2.default.object.isRequired
-};
-
-var Messages = function (_Component3) {
-  _inherits(Messages, _Component3);
-
-  function Messages() {
-    _classCallCheck(this, Messages);
-
-    return _possibleConstructorReturn(this, (Messages.__proto__ || Object.getPrototypeOf(Messages)).apply(this, arguments));
-  }
-
-  _createClass(Messages, [{
-    key: 'renderMessages',
-    value: function renderMessages() {
-      return this.props.msgs.map(function (m) {
-        if (m.user) {
-          return _react2.default.createElement(MessageUser, { msg: m, key: m.id });
-        }
-        return _react2.default.createElement(MessageBot, { msg: m, key: m.id });
-      });
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        null,
-        this.renderMessages()
-      );
-    }
-  }]);
-
-  return Messages;
-}(_react.Component);
-
-Messages.propTypes = {
-  msgs: _propTypes2.default.array.isRequired
-};
-exports.default = Messages;
-
-/***/ }),
-/* 586 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(11);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _propTypes = __webpack_require__(134);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _Messages = __webpack_require__(585);
-
-var _Messages2 = _interopRequireDefault(_Messages);
-
-var _cuiConnect = __webpack_require__(590);
-
-var _cuiConnect2 = _interopRequireDefault(_cuiConnect);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CuiMsg = (0, _cuiConnect2.default)(function (state) {
-  return { msgs: state.msgs };
-})(_Messages2.default);
-
-var TypingMessage = function (_Component) {
-  _inherits(TypingMessage, _Component);
-
-  function TypingMessage() {
-    _classCallCheck(this, TypingMessage);
-
-    return _possibleConstructorReturn(this, (TypingMessage.__proto__ || Object.getPrototypeOf(TypingMessage)).apply(this, arguments));
-  }
-
-  _createClass(TypingMessage, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        { className: 'cui-typing' },
-        '...'
-      );
-    }
-  }]);
-
-  return TypingMessage;
-}(_react.Component);
-
-var Choice = function (_Component2) {
-  _inherits(Choice, _Component2);
-
-  function Choice() {
-    var _ref;
-
-    var _temp, _this2, _ret;
-
-    _classCallCheck(this, Choice);
-
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return _ret = (_temp = (_this2 = _possibleConstructorReturn(this, (_ref = Choice.__proto__ || Object.getPrototypeOf(Choice)).call.apply(_ref, [this].concat(args))), _this2), _this2.handleChoice = function (c) {
-      _this2.props.msg.process({
-        id: c.id,
-        msg: c.val,
-        user: true
-      });
-    }, _temp), _possibleConstructorReturn(_this2, _ret);
-  }
-
-  _createClass(Choice, [{
-    key: 'render',
-    value: function render() {
-      var _this3 = this;
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'cui-choice' },
-        'Choose:',
-        this.props.msg.choices.map(function (c) {
-          return _react2.default.createElement(
-            'p',
-            { key: c.id, onClick: function onClick() {
-                return _this3.handleChoice(c);
-              } },
-            c.val
-          );
-        })
-      );
-    }
-  }]);
-
-  return Choice;
-}(_react.Component);
-
-Choice.propTypes = {
-  msg: _propTypes2.default.object.isRequired
-};
-
-var ReadMode = function () {
-  function ReadMode() {
-    _classCallCheck(this, ReadMode);
-  }
-
-  _createClass(ReadMode, [{
-    key: 'transition',
-    value: function transition(ctx, msg) {
-      ctx.setState({
-        disabled: true,
-        isTyping: true,
-        choiceMsg: null
-      });
-
-      setTimeout(function () {
-        ctx.setState({
-          isTyping: false
-        });
-        msg.process();
-      }, ctx.props.delay || 0);
-    }
-  }]);
-
-  return ReadMode;
-}();
-
-var ChoiceMode = function () {
-  function ChoiceMode() {
-    _classCallCheck(this, ChoiceMode);
-  }
-
-  _createClass(ChoiceMode, [{
-    key: 'transition',
-    value: function transition(ctx, msg) {
-      ctx.setState({
-        disabled: false,
-        isTyping: false
-      });
-
-      setTimeout(function () {
-        ctx.setState({
-          choiceMsg: msg
-        });
-      }, ctx.props.delay || 0);
-    }
-  }]);
-
-  return ChoiceMode;
-}();
-
-var MODE = {
-  choice: new ChoiceMode(),
-  read: new ReadMode()
-};
-
-var CuiManager = function (_Component3) {
-  _inherits(CuiManager, _Component3);
-
-  function CuiManager(props) {
-    _classCallCheck(this, CuiManager);
-
-    var _this4 = _possibleConstructorReturn(this, (CuiManager.__proto__ || Object.getPrototypeOf(CuiManager)).call(this, props));
-
-    _this4.mode = null;
-    _this4.state = {
-      msg: '',
-      disabled: true,
-      isTyping: false,
-      choiceMsg: false
-    };
-    return _this4;
-  }
-
-  _createClass(CuiManager, [{
-    key: 'getChildContext',
-    value: function getChildContext() {
-      return { state: _extends({}, this.state, { msgs: this.props.msgs }) };
-    }
-  }, {
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.setMode(this.props.currentMsg);
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      if (this.props.currentMsg !== nextProps.currentMsg) {
-        this.setMode(nextProps.currentMsg);
-      }
-    }
-  }, {
-    key: 'setMode',
-    value: function setMode(msg) {
-      if (!msg) {
-        return;
-      }
-      if (msg.choices) {
-        this.mode = MODE.choice;
-      } else {
-        this.mode = MODE.read;
-      }
-      this.mode.transition(this, msg);
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(CuiMsg, null),
-        this.state.choiceMsg ? _react2.default.createElement(Choice, { msg: this.state.choiceMsg }) : null,
-        this.state.isTyping ? _react2.default.createElement(TypingMessage, null) : null,
-        this.props.children
-      );
-    }
-  }]);
-
-  return CuiManager;
-}(_react.Component);
-
-CuiManager.propTypes = {
-  msgs: _propTypes2.default.array.isRequired,
-  currentMsg: _propTypes2.default.object,
-  delay: _propTypes2.default.number,
-  children: _propTypes2.default.element.isRequired
-};
-CuiManager.childContextTypes = {
-  state: _propTypes2.default.object.isRequired
-};
-exports.default = CuiManager;
-
-/***/ }),
+/* 585 */,
+/* 586 */,
 /* 587 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -34108,187 +33428,31 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _cui = __webpack_require__(596);
 
-var _react = __webpack_require__(11);
+Object.defineProperty(exports, 'Cui', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_cui).default;
+  }
+});
 
-var _react2 = _interopRequireDefault(_react);
+var _cuiConnect = __webpack_require__(591);
 
-var _propTypes = __webpack_require__(134);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _CuiManager = __webpack_require__(586);
-
-var _CuiManager2 = _interopRequireDefault(_CuiManager);
+Object.defineProperty(exports, 'CuiConnector', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_cuiConnect).default;
+  }
+});
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Cui = function (_Component) {
-  _inherits(Cui, _Component);
-
-  function Cui(props) {
-    _classCallCheck(this, Cui);
-
-    var _this = _possibleConstructorReturn(this, (Cui.__proto__ || Object.getPrototypeOf(Cui)).call(this, props));
-
-    _this.processReadMsg = function (msg) {
-      return function () {
-        _this.processMsg(msg);
-      };
-    };
-
-    _this.processChoiceMsg = function () {
-      return function (msg) {
-        _this.msgQueue.unshift(msg);
-        _this.processMsg(null);
-      };
-    };
-
-    _this.msgQueue = [].concat(_toConsumableArray(props.msgs));
-    _this.isProcessing = false;
-    _this.state = {
-      processedMsgs: [],
-      currentMsg: null
-    };
-    return _this;
-  }
-
-  _createClass(Cui, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      this.processQueue();
-    }
-  }, {
-    key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      var _this2 = this;
-
-      this.msgQueue = this.msgQueue.concat(nextProps.msgs.filter(function (m) {
-        return !_this2.isProcessed(m.id);
-      }));
-      this.processQueue();
-    }
-  }, {
-    key: 'decorateMsg',
-    value: function decorateMsg(msg) {
-      var decoratedMsg = Object.assign({}, msg);
-      if (msg.choices) {
-        decoratedMsg.process = this.processChoiceMsg();
-      } else {
-        decoratedMsg.process = this.processReadMsg(msg);
-      }
-      return decoratedMsg;
-    }
-  }, {
-    key: 'isProcessed',
-    value: function isProcessed(id) {
-      return this.state.processedMsgs.some(function (p) {
-        return p.id === id;
-      });
-    }
-  }, {
-    key: 'processQueue',
-    value: function processQueue() {
-      if (!this.msgQueue.length) {
-        return;
-      }
-      if (this.isProcessing) {
-        return;
-      }
-      var msg = this.msgQueue.shift();
-      if (this.isProcessed(msg.id)) {
-        return;
-      }
-      this.isProcessing = true;
-      this.setState({ currentMsg: this.decorateMsg(msg) });
-    }
-  }, {
-    key: 'processMsg',
-    value: function processMsg(msg) {
-      if (msg) {
-        this.setState({
-          processedMsgs: this.state.processedMsgs.concat(msg)
-        });
-      }
-      this.isProcessing = false;
-      this.processQueue();
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        _CuiManager2.default,
-        {
-          msgs: this.state.processedMsgs,
-          currentMsg: this.state.currentMsg,
-          delay: this.props.delay
-        },
-        this.props.children
-      );
-    }
-  }]);
-
-  return Cui;
-}(_react.Component);
-
-Cui.propTypes = {
-  msgs: _propTypes2.default.array.isRequired,
-  delay: _propTypes2.default.number,
-  children: _propTypes2.default.element.isRequired
-};
-exports.default = Cui;
-
 /***/ }),
-/* 588 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(429)();
-// imports
-
-
-// module
-exports.push([module.i, ".cui-message--bot {\n  color: red; }\n\n.cui-typing--hidden {\n  display: none; }\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 589 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(588);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// add the styles to the DOM
-var update = __webpack_require__(575)(content, {});
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!./../../../../../node_modules/css-loader/index.js!./../../../../../node_modules/sass-loader/index.js!./style.scss", function() {
-			var newContent = require("!!./../../../../../node_modules/css-loader/index.js!./../../../../../node_modules/sass-loader/index.js!./style.scss");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 590 */
+/* 588 */,
+/* 589 */,
+/* 590 */,
+/* 591 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34337,19 +33501,368 @@ var cuiConnect = function cuiConnect() {
       _createClass(CuiCmp, [{
         key: 'render',
         value: function render() {
-          var props = _extends({}, this.props, mergeProps(this.context.state));
+          var props = _extends({}, this.props, mergeProps(this.context.state, this.context.processMsg));
           return _react2.default.createElement(Cmp, props);
         }
       }]);
 
       return CuiCmp;
     }(_react.Component), _class.contextTypes = {
-      state: _propTypes2.default.object.isRequired
+      state: _propTypes2.default.object.isRequired,
+      processMsg: _propTypes2.default.func.isRequired
     }, _temp;
   };
 };
 
 exports.default = cuiConnect;
+
+/***/ }),
+/* 592 */,
+/* 593 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _class, _temp;
+
+var _react = __webpack_require__(11);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(134);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _cuiConnect = __webpack_require__(591);
+
+var _cuiConnect2 = _interopRequireDefault(_cuiConnect);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CuiBusyTyping = (0, _cuiConnect2.default)(function (state) {
+  return { isBusy: state.isBusy };
+})((_temp = _class = function (_Component) {
+  _inherits(BusyTyping, _Component);
+
+  function BusyTyping() {
+    _classCallCheck(this, BusyTyping);
+
+    return _possibleConstructorReturn(this, (BusyTyping.__proto__ || Object.getPrototypeOf(BusyTyping)).apply(this, arguments));
+  }
+
+  _createClass(BusyTyping, [{
+    key: 'render',
+    value: function render() {
+      if (this.props.isBusy) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'cui-typing' },
+          '...'
+        );
+      }
+      return null;
+    }
+  }]);
+
+  return BusyTyping;
+}(_react.Component), _class.propTypes = {
+  isBusy: _propTypes2.default.bool.isRequired
+}, _temp));
+
+var MessageBot = function (_Component2) {
+  _inherits(MessageBot, _Component2);
+
+  function MessageBot() {
+    _classCallCheck(this, MessageBot);
+
+    return _possibleConstructorReturn(this, (MessageBot.__proto__ || Object.getPrototypeOf(MessageBot)).apply(this, arguments));
+  }
+
+  _createClass(MessageBot, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: 'cui-message cui-message--bot' },
+        this.props.msg.msg
+      );
+    }
+  }]);
+
+  return MessageBot;
+}(_react.Component);
+
+MessageBot.propTypes = {
+  msg: _propTypes2.default.object.isRequired
+};
+
+var MessageUser = function (_Component3) {
+  _inherits(MessageUser, _Component3);
+
+  function MessageUser() {
+    _classCallCheck(this, MessageUser);
+
+    return _possibleConstructorReturn(this, (MessageUser.__proto__ || Object.getPrototypeOf(MessageUser)).apply(this, arguments));
+  }
+
+  _createClass(MessageUser, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: 'cui-message cui-message--user' },
+        this.props.msg.msg
+      );
+    }
+  }]);
+
+  return MessageUser;
+}(_react.Component);
+
+MessageUser.propTypes = {
+  msg: _propTypes2.default.object.isRequired
+};
+
+var Messages = function (_Component4) {
+  _inherits(Messages, _Component4);
+
+  function Messages() {
+    _classCallCheck(this, Messages);
+
+    return _possibleConstructorReturn(this, (Messages.__proto__ || Object.getPrototypeOf(Messages)).apply(this, arguments));
+  }
+
+  _createClass(Messages, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.handleMsg(this.props.currentMsg);
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      if (this.props.currentMsg !== nextProps.currentMsg) {
+        this.handleMsg(nextProps.currentMsg);
+      }
+    }
+  }, {
+    key: 'handleMsg',
+    value: function handleMsg(msg) {
+      var _this5 = this;
+
+      if (!msg) {
+        return;
+      }
+      var delay = this.props.delay || 1000;
+      if (msg.user) {
+        delay = 0;
+      }
+      setTimeout(function () {
+        _this5.props.processMsg(msg);
+      }, delay);
+    }
+  }, {
+    key: 'renderMessages',
+    value: function renderMessages() {
+      return this.props.msgs.map(function (m) {
+        if (m.user) {
+          return _react2.default.createElement(MessageUser, { msg: m, key: m.id });
+        }
+        return _react2.default.createElement(MessageBot, { msg: m, key: m.id });
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        this.renderMessages(),
+        _react2.default.createElement(CuiBusyTyping, null)
+      );
+    }
+  }]);
+
+  return Messages;
+}(_react.Component);
+
+Messages.propTypes = {
+  msgs: _propTypes2.default.array.isRequired,
+  currentMsg: _propTypes2.default.object,
+  processMsg: _propTypes2.default.func.isRequired,
+  delay: _propTypes2.default.number
+};
+exports.default = (0, _cuiConnect2.default)(function (state, processMsg) {
+  return {
+    msgs: state.msgs,
+    currentMsg: state.currentMsg,
+    processMsg: processMsg
+  };
+})(Messages);
+
+/***/ }),
+/* 594 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _messages = __webpack_require__(593);
+
+Object.defineProperty(exports, 'Messages', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_messages).default;
+  }
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/***/ }),
+/* 595 */,
+/* 596 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(11);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(134);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Cui = function (_Component) {
+  _inherits(Cui, _Component);
+
+  function Cui(props) {
+    _classCallCheck(this, Cui);
+
+    var _this = _possibleConstructorReturn(this, (Cui.__proto__ || Object.getPrototypeOf(Cui)).call(this, props));
+
+    _this.processMsg = function (msg) {
+      if (msg) {
+        _this.setState({
+          msgs: _this.state.msgs.concat(msg)
+        });
+      }
+      _this.isProcessing = false;
+      _this.processQueue();
+    };
+
+    _this.msgQueue = [].concat(_toConsumableArray(props.msgs));
+    _this.isProcessing = false;
+    _this.state = {
+      isBusy: false,
+      msgs: [],
+      currentMsg: null
+    };
+    return _this;
+  }
+
+  _createClass(Cui, [{
+    key: 'getChildContext',
+    value: function getChildContext() {
+      return { state: _extends({}, this.state), processMsg: this.processMsg };
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.processQueue();
+    }
+  }, {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      var _this2 = this;
+
+      this.msgQueue = this.msgQueue.concat(nextProps.msgs.filter(function (m) {
+        return !_this2.isProcessed(m.id);
+      }));
+      this.processQueue();
+    }
+  }, {
+    key: 'isProcessed',
+    value: function isProcessed(id) {
+      return this.state.msgs.some(function (p) {
+        return p.id === id;
+      });
+    }
+  }, {
+    key: 'processQueue',
+    value: function processQueue() {
+      if (!this.msgQueue.length) {
+        this.setState({ isBusy: false });
+        return;
+      }
+      if (this.isProcessing) {
+        return;
+      }
+      var msg = this.msgQueue.shift();
+      if (this.isProcessed(msg.id)) {
+        return;
+      }
+      this.isProcessing = true;
+      this.setState({ currentMsg: msg, isBusy: true });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        this.props.children
+      );
+    }
+  }]);
+
+  return Cui;
+}(_react.Component);
+
+Cui.propTypes = {
+  msgs: _propTypes2.default.array.isRequired,
+  children: _propTypes2.default.PropTypes.node.isRequired
+};
+Cui.childContextTypes = {
+  state: _propTypes2.default.object.isRequired,
+  processMsg: _propTypes2.default.func.isRequired
+};
+exports.default = Cui;
 
 /***/ })
 ],[581]);

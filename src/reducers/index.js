@@ -14,15 +14,15 @@ const messages = (
     {
       id: '2',
       msg: 'hi',
-      // user: true,
+      user: true,
     },
-    {
-      id: 'c',
-      choices: [{ id: 'one', val: 'one' }, { id: 'two', val: 'two' }],
-      cb(choice) {
-        console.log('The use chose', choice);
-      },
-    },
+    // {
+    //   id: 'c',
+    //   choices: [{ id: 'one', val: 'one' }, { id: 'two', val: 'two' }],
+    //   cb(choice) {
+    //     console.log('The use chose', choice);
+    //   },
+    // },
   ],
   action
 ) => {
