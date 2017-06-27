@@ -14429,82 +14429,34 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var ChatBox = function (_Component) {
-  _inherits(ChatBox, _Component);
-
-  function ChatBox(props) {
-    _classCallCheck(this, ChatBox);
-
-    var _this = _possibleConstructorReturn(this, (ChatBox.__proto__ || Object.getPrototypeOf(ChatBox)).call(this, props));
-
-    _this.handleChange = function (e) {
-      _this.setState({ msg: e.target.value });
-    };
-
-    _this.handleSubmit = function (e) {
-      e.preventDefault();
-      _this.props.dispatch((0, _actions.addMessages)([{
-        id: _this.state.msg,
-        msg: _this.state.msg,
-        user: true
-      }]));
-      _this.setState({ msg: '' });
-    };
-
-    _this.state = {
-      msg: ''
-    };
-    return _this;
-  }
-
-  _createClass(ChatBox, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'form',
-        { onSubmit: this.handleSubmit },
-        _react2.default.createElement('input', {
-          type: 'text',
-          value: this.state.msg,
-          onChange: this.handleChange,
-          disabled: this.state.disabled
-        })
-      );
-    }
-  }]);
-
-  return ChatBox;
-}(_react.Component);
-
-ChatBox.propTypes = {
-  dispatch: _propTypes2.default.func.isRequired
-};
-
-
-var ConnectedChatbox = (0, _reactRedux.connect)()(ChatBox);
-
-var App = function (_Component2) {
-  _inherits(App, _Component2);
+var App = function (_Component) {
+  _inherits(App, _Component);
 
   function App() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
     _classCallCheck(this, App);
 
-    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.addMsg = function (msg) {
+      return _this.props.dispatch((0, _actions.addMessages)([msg]));
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(App, [{
     key: 'render',
     value: function render() {
-      var _this3 = this;
-
       return _react2.default.createElement(
         _Cui.Cui,
         { msgs: this.props.msgs },
         _react2.default.createElement(_widgets.Messages, { delay: 500 }),
-        _react2.default.createElement(_widgets.Choices, { addMessage: function addMessage(msg) {
-            return _this3.props.dispatch((0, _actions.addMessages)([msg]));
-          } }),
-        _react2.default.createElement(ConnectedChatbox, null)
+        _react2.default.createElement(_widgets.Choices, { addMessage: this.addMsg }),
+        _react2.default.createElement(_widgets.TextInput, { addMessage: this.addMsg })
       );
     }
   }]);
@@ -14733,7 +14685,6 @@ var Choice = function (_Component) {
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Choice.__proto__ || Object.getPrototypeOf(Choice)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
       choices: []
     }, _this.handleChoice = function (c) {
-      console.log('pushing choice!');
       _this.props.addMessage({
         id: c.id,
         msg: c.val,
@@ -14821,6 +14772,15 @@ Object.defineProperty(exports, 'Choices', {
   enumerable: true,
   get: function get() {
     return _interopRequireDefault(_choices).default;
+  }
+});
+
+var _textInput = __webpack_require__(582);
+
+Object.defineProperty(exports, 'TextInput', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_textInput).default;
   }
 });
 
@@ -33987,6 +33947,97 @@ module.exports = function(module) {
 __webpack_require__(242);
 module.exports = __webpack_require__(241);
 
+
+/***/ }),
+/* 581 */,
+/* 582 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(9);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(77);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _cuiConnect = __webpack_require__(103);
+
+var _cuiConnect2 = _interopRequireDefault(_cuiConnect);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var TextInput = function (_Component) {
+  _inherits(TextInput, _Component);
+
+  function TextInput(props) {
+    _classCallCheck(this, TextInput);
+
+    var _this = _possibleConstructorReturn(this, (TextInput.__proto__ || Object.getPrototypeOf(TextInput)).call(this, props));
+
+    _this.handleChange = function (e) {
+      _this.setState({ msg: e.target.value });
+    };
+
+    _this.handleSubmit = function (e) {
+      e.preventDefault();
+      _this.props.addMessage({
+        id: _this.state.msg,
+        msg: _this.state.msg,
+        type: 'user'
+      });
+      _this.setState({ msg: '' });
+    };
+
+    _this.state = {
+      msg: ''
+    };
+    return _this;
+  }
+
+  _createClass(TextInput, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'form',
+        { onSubmit: this.handleSubmit },
+        _react2.default.createElement('input', {
+          type: 'text',
+          value: this.state.msg,
+          onChange: this.handleChange,
+          disabled: this.props.isBusy
+        })
+      );
+    }
+  }]);
+
+  return TextInput;
+}(_react.Component);
+
+TextInput.propTypes = {
+  addMessage: _propTypes2.default.func.isRequired,
+  isBusy: _propTypes2.default.bool.isRequired
+};
+exports.default = (0, _cuiConnect2.default)(function (state) {
+  return {
+    isBusy: state.isBusy
+  };
+})(TextInput);
 
 /***/ })
 ],[580]);

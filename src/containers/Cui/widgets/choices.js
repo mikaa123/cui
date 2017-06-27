@@ -25,7 +25,6 @@ class Choice extends Component {
   }
 
   handleChoice = c => {
-    console.log('pushing choice!');
     this.props.addMessage({
       id: c.id,
       msg: c.val,
