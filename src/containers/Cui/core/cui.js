@@ -45,7 +45,6 @@ class Cui extends Component {
 
   processQueue() {
     if (!this.msgQueue.length) {
-      this.setState({ currentMsg: null, isBusy: false });
       return;
     }
     if (this.isProcessing) {
@@ -64,9 +63,13 @@ class Cui extends Component {
       this.processedIDs[msg.id] = true;
       this.setState({
         msgs: this.state.msgs.concat(msg),
+        currentMsg: null,
       });
     }
     this.isProcessing = false;
+    if (!this.msgQueue.length) {
+      this.setState({ isBusy: false });
+    }
     this.processQueue();
   };
 
