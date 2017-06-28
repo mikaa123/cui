@@ -3,29 +3,29 @@ import { ADD_MESSAGES } from './../actions';
 
 const messages = (
   state = [
-    {
-      id: '1',
-      type: 'bot',
-      msg: 'Hello',
-    },
-    {
-      id: '11',
-      type: 'bot',
-      msg: 'Sup',
-    },
-    {
-      id: '2',
-      msg: 'hi',
-      type: 'user',
-    },
-    {
-      id: 'c',
-      type: 'choice',
-      choices: [{ id: 'one', val: 'one' }, { id: 'two', val: 'two' }],
-      cb(choice) {
-        console.log('The use chose', choice);
-      },
-    },
+    // {
+    //   id: '1',
+    //   type: 'bot',
+    //   value: 'Hello',
+    // },
+    // {
+    //   id: '11',
+    //   type: 'bot',
+    //   value: 'Sup',
+    // },
+    // {
+    //   id: '2',
+    //   value: 'hi',
+    //   type: 'user',
+    // },
+    // {
+    //   id: 'c',
+    //   type: 'choice',
+    //   choices: [{ id: 'one', val: 'one' }, { id: 'two', val: 'two' }],
+    //   cb(choice) {
+    //     console.log('The use chose', choice);
+    //   },
+    // },
   ],
   action
 ) => {

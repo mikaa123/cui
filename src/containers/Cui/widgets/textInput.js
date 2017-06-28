@@ -23,7 +23,7 @@ class TextInput extends Component {
     e.preventDefault();
     this.props.addMessage({
       id: this.state.msg,
-      msg: this.state.msg,
+      value: this.state.msg,
       type: 'user',
     });
     this.setState({ msg: '' });

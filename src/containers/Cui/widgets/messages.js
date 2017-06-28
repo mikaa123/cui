@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import cuiConnect from '../core/cuiConnect';
 
-const DEFAULT_DELAY = 1000;
-
 class Typing extends Component {
   render() {
     return (
@@ -29,10 +27,12 @@ class MessageBot extends Component {
   }
 
   componentDidMount() {
+    const delay =
+      this.props.delay || this.props.msg.value.length / (800 / 60) * 1000;
     setTimeout(() => {
       this.setState({ isTyping: false });
       this.props.processMsg(this.props.msg);
-    }, this.props.delay || DEFAULT_DELAY);
+    }, delay);
   }
 
   render() {
@@ -41,7 +41,7 @@ class MessageBot extends Component {
     }
     return (
       <div className="cui-message cui-message--bot">
-        {this.props.msg.msg}
+        {this.props.msg.value}
       </div>
     );
   }
@@ -60,7 +60,7 @@ class MessageUser extends Component {
   render() {
     return (
       <div className="cui-message cui-message--user">
-        {this.props.msg.msg}
+        {this.props.msg.value}
       </div>
     );
   }
