@@ -47,7 +47,7 @@ class App extends Component {
           addMessage={msg => {
             this.addMsg(msg);
             if (this.state.step) {
-              this.state.step.onChoice(msg.value);
+              this.state.step.onChoice(msg.values);
             }
           }}
         />
@@ -55,7 +55,7 @@ class App extends Component {
           addMessage={msg => {
             this.addMsg(msg);
             if (this.state.step) {
-              this.state.step.onText(msg.value);
+              this.state.step.onText(msg.values);
             }
           }}
         />

@@ -23,26 +23,39 @@ class MessageBot extends Component {
     super(props);
     this.state = {
       isTyping: true,
+      values: [],
     };
   }
 
-  componentDidMount() {
-    const delay =
-      this.props.delay || this.props.msg.value.length / (800 / 60) * 1000;
+  typeMsg() {
+    const value = this.props.msg.values.shift();
+    const delay = this.props.delay || value.length / (800 / 60) * 1000;
+    this.setState({
+      isTyping: true,
+    });
     setTimeout(() => {
-      this.setState({ isTyping: false });
-      this.props.processMsg(this.props.msg);
+      this.setState(state => ({
+        isTyping: false,
+        values: state.values.concat(value),
+      }));
+      if (!this.props.msg.values.length) {
+        this.props.processMsg(this.props.msg);
+        return;
+      }
+      this.typeMsg();
     }, delay);
   }
 
+  componentDidMount() {
+    this.typeMsg();
+  }
+
   render() {
-    if (this.state.isTyping) {
-      return <Typing />;
-    }
     return (
       <div className="cui-message cui-message--bot">
         <img src={this.props.msg.avatar} />
-        {this.props.msg.value}
+        {this.state.values.map(v => v)}
+        {this.state.isTyping ? <Typing /> : null}
       </div>
     );
   }
@@ -61,7 +74,7 @@ class MessageUser extends Component {
   render() {
     return (
       <div className="cui-message cui-message--user">
-        {this.props.msg.value}
+        {this.props.msg.values[0]}
       </div>
     );
   }

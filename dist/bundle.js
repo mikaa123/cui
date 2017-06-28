@@ -15907,7 +15907,7 @@ var App = function (_Component) {
           addMessage: function addMessage(msg) {
             _this3.addMsg(msg);
             if (_this3.state.step) {
-              _this3.state.step.onChoice(msg.value);
+              _this3.state.step.onChoice(msg.values);
             }
           }
         }),
@@ -15915,7 +15915,7 @@ var App = function (_Component) {
           addMessage: function addMessage(msg) {
             _this3.addMsg(msg);
             if (_this3.state.step) {
-              _this3.state.step.onText(msg.value);
+              _this3.state.step.onText(msg.values);
             }
           }
         })
@@ -15967,28 +15967,6 @@ var nextID = function nextID() {
   return '' + ++id;
 };
 
-// const steps = [
-//   {
-//     type: 'question',
-//     questions: ['Hello, what is your name?'],
-//     variable: 'name',
-//     answer: 'Glad to meet you {name}',
-//   },
-//   {
-//     type: 'question',
-//     questions: ['probably a lotta questions but...', 'how old are you?'],
-//     variable: 'age',
-//     answer: 'Ok {name}. good to know you are {age}',
-//   },
-//   {
-//     type: 'choice',
-//     questions: ['Are you more a coffee or a tea drinker?'],
-//     variable: 'drink',
-//     choices: [{ id: 1, val: 'Coffee' }, { id: 2, val: 'Tea' }],
-//     answer: '{drink} is good, {name}.',
-//   },
-// ];
-
 var ChoiceScript = function () {
   function ChoiceScript(step, addMsgs, user, next) {
     _classCallCheck(this, ChoiceScript);
@@ -15998,40 +15976,42 @@ var ChoiceScript = function () {
 
   _createClass(ChoiceScript, [{
     key: 'onChoice',
-    value: function onChoice(value) {
-      var _this = this;
-
-      this.user[this.variable] = value;
-      this.addMsgs([{
-        id: nextID(),
-        value: this.answer.replace(/{([\w]+)}?/g, function (match) {
-          for (var _len = arguments.length, p = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-            p[_key - 1] = arguments[_key];
-          }
-
-          return _this.user[p[0]];
-        }),
-        avatar: this.avatar,
-        type: 'bot'
-      }]);
+    value: function onChoice(values) {
+      this.user[this.variable] = values[0];
+      // this.addMsgs([
+      //   {
+      //     id: nextID(),
+      //     values: [
+      //       this.answer.replace(/{([\w]+)}?/g, (match, ...p) => this.user[p[0]]),
+      //     ],
+      //     avatar: this.avatar,
+      //     type: 'bot',
+      //   },
+      // ]);
       this.next();
     }
   }, {
     key: 'process',
     value: function process() {
-      var _this2 = this;
+      var _this = this;
 
-      this.addMsgs(this.questions.map(function (q) {
-        return {
-          id: nextID(),
-          value: q,
-          avatar: _this2.avatar,
-          type: 'bot'
-        };
-      }).concat({
+      this.addMsgs([{
+        id: nextID(),
+        values: this.questions.map(function (q) {
+          return q.replace(/{([\w]+)}?/g, function (match) {
+            for (var _len = arguments.length, p = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+              p[_key - 1] = arguments[_key];
+            }
+
+            return _this.user[p[0]];
+          });
+        }),
+        avatar: this.avatar,
+        type: 'bot'
+      }, {
         type: 'choice',
         choices: this.choices
-      }));
+      }]);
     }
   }]);
 
@@ -16047,37 +16027,39 @@ var QuestionScript = function () {
 
   _createClass(QuestionScript, [{
     key: 'onText',
-    value: function onText(value) {
-      var _this3 = this;
-
-      this.user[this.variable] = value;
-      this.addMsgs([{
-        id: nextID(),
-        value: this.answer.replace(/{([\w]+)}?/g, function (match) {
-          for (var _len2 = arguments.length, p = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-            p[_key2 - 1] = arguments[_key2];
-          }
-
-          return _this3.user[p[0]];
-        }),
-        avatar: this.avatar,
-        type: 'bot'
-      }]);
+    value: function onText(values) {
+      this.user[this.variable] = values[0];
+      // this.addMsgs([
+      //   {
+      //     id: nextID(),
+      //     values: [
+      //       this.answer.replace(/{([\w]+)}?/g, (match, ...p) => this.user[p[0]]),
+      //     ],
+      //     avatar: this.avatar,
+      //     type: 'bot',
+      //   },
+      // ]);
       this.next();
     }
   }, {
     key: 'process',
     value: function process() {
-      var _this4 = this;
+      var _this2 = this;
 
-      this.addMsgs(this.questions.map(function (q) {
-        return {
-          id: nextID(),
-          value: q,
-          avatar: _this4.avatar,
-          type: 'bot'
-        };
-      }));
+      this.addMsgs([{
+        id: nextID(),
+        values: this.questions.map(function (q) {
+          return q.replace(/{([\w]+)}?/g, function (match) {
+            for (var _len2 = arguments.length, p = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+              p[_key2 - 1] = arguments[_key2];
+            }
+
+            return _this2.user[p[0]];
+          });
+        }),
+        avatar: this.avatar,
+        type: 'bot'
+      }]);
     }
   }]);
 
@@ -16097,7 +16079,7 @@ var ScriptManager = function () {
   _createClass(ScriptManager, [{
     key: 'nextStep',
     value: function nextStep() {
-      var _this5 = this;
+      var _this3 = this;
 
       var nextStepID = void 0;
 
@@ -16113,22 +16095,22 @@ var ScriptManager = function () {
       }
 
       getNextStep(nextStepID).then(function (step) {
-        _this5.currentStep = step;
-        _this5.onStep(_this5.createStep(step));
+        _this3.currentStep = step;
+        _this3.onStep(_this3.createStep(step));
       });
     }
   }, {
     key: 'createStep',
     value: function createStep(step) {
-      var _this6 = this;
+      var _this4 = this;
 
       if (step.type === 'question') {
         return new QuestionScript(step, this.addMsgs, this.user, function () {
-          return _this6.nextStep();
+          return _this4.nextStep();
         });
       } else if (step.type === 'choice') {
         return new ChoiceScript(step, this.addMsgs, this.user, function () {
-          return _this6.nextStep();
+          return _this4.nextStep();
         });
       }
       return null;
@@ -16355,7 +16337,7 @@ var Choice = function (_Component) {
     }, _this.handleChoice = function (c) {
       _this.props.addMessage({
         id: c.id,
-        value: c.val,
+        values: [c.val],
         type: 'user'
       });
       _this.props.processMsg(_this.props.currentMsg);
@@ -16519,33 +16501,52 @@ var MessageBot = function (_Component2) {
     var _this2 = _possibleConstructorReturn(this, (MessageBot.__proto__ || Object.getPrototypeOf(MessageBot)).call(this, props));
 
     _this2.state = {
-      isTyping: true
+      isTyping: true,
+      values: []
     };
     return _this2;
   }
 
   _createClass(MessageBot, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
+    key: 'typeMsg',
+    value: function typeMsg() {
       var _this3 = this;
 
-      var delay = this.props.delay || this.props.msg.value.length / (800 / 60) * 1000;
+      var value = this.props.msg.values.shift();
+      var delay = this.props.delay || value.length / (800 / 60) * 1000;
+      this.setState({
+        isTyping: true
+      });
       setTimeout(function () {
-        _this3.setState({ isTyping: false });
-        _this3.props.processMsg(_this3.props.msg);
+        _this3.setState(function (state) {
+          return {
+            isTyping: false,
+            values: state.values.concat(value)
+          };
+        });
+        if (!_this3.props.msg.values.length) {
+          _this3.props.processMsg(_this3.props.msg);
+          return;
+        }
+        _this3.typeMsg();
       }, delay);
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.typeMsg();
     }
   }, {
     key: 'render',
     value: function render() {
-      if (this.state.isTyping) {
-        return _react2.default.createElement(Typing, null);
-      }
       return _react2.default.createElement(
         'div',
         { className: 'cui-message cui-message--bot' },
         _react2.default.createElement('img', { src: this.props.msg.avatar }),
-        this.props.msg.value
+        this.state.values.map(function (v) {
+          return v;
+        }),
+        this.state.isTyping ? _react2.default.createElement(Typing, null) : null
       );
     }
   }]);
@@ -16579,7 +16580,7 @@ var MessageUser = function (_Component3) {
       return _react2.default.createElement(
         'div',
         { className: 'cui-message cui-message--user' },
-        this.props.msg.value
+        this.props.msg.values[0]
       );
     }
   }]);
@@ -16701,7 +16702,7 @@ var TextInput = function (_Component) {
       e.preventDefault();
       _this.props.addMessage({
         id: _this.state.msg,
-        value: _this.state.msg,
+        values: [_this.state.msg],
         type: 'user'
       });
       _this.setState({ msg: '' });

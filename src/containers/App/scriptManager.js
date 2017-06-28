@@ -9,61 +9,39 @@ function getNextStep(stepID) {
 let id = 0;
 const nextID = () => `${++id}`;
 
-// const steps = [
-//   {
-//     type: 'question',
-//     questions: ['Hello, what is your name?'],
-//     variable: 'name',
-//     answer: 'Glad to meet you {name}',
-//   },
-//   {
-//     type: 'question',
-//     questions: ['probably a lotta questions but...', 'how old are you?'],
-//     variable: 'age',
-//     answer: 'Ok {name}. good to know you are {age}',
-//   },
-//   {
-//     type: 'choice',
-//     questions: ['Are you more a coffee or a tea drinker?'],
-//     variable: 'drink',
-//     choices: [{ id: 1, val: 'Coffee' }, { id: 2, val: 'Tea' }],
-//     answer: '{drink} is good, {name}.',
-//   },
-// ];
-
 class ChoiceScript {
   constructor(step, addMsgs, user, next) {
     Object.assign(this, step, { addMsgs, user, next });
   }
-  onChoice(value) {
-    this.user[this.variable] = value;
+  onChoice(values) {
+    this.user[this.variable] = values[0];
+    // this.addMsgs([
+    //   {
+    //     id: nextID(),
+    //     values: [
+    //       this.answer.replace(/{([\w]+)}?/g, (match, ...p) => this.user[p[0]]),
+    //     ],
+    //     avatar: this.avatar,
+    //     type: 'bot',
+    //   },
+    // ]);
+    this.next();
+  }
+  process() {
     this.addMsgs([
       {
         id: nextID(),
-        value: this.answer.replace(
-          /{([\w]+)}?/g,
-          (match, ...p) => this.user[p[0]]
+        values: this.questions.map(q =>
+          q.replace(/{([\w]+)}?/g, (match, ...p) => this.user[p[0]])
         ),
         avatar: this.avatar,
         type: 'bot',
       },
+      {
+        type: 'choice',
+        choices: this.choices,
+      },
     ]);
-    this.next();
-  }
-  process() {
-    this.addMsgs(
-      this.questions
-        .map(q => ({
-          id: nextID(),
-          value: q,
-          avatar: this.avatar,
-          type: 'bot',
-        }))
-        .concat({
-          type: 'choice',
-          choices: this.choices,
-        })
-    );
   }
 }
 
@@ -71,30 +49,31 @@ class QuestionScript {
   constructor(step, addMsgs, user, next) {
     Object.assign(this, step, { addMsgs, user, next });
   }
-  onText(value) {
-    this.user[this.variable] = value;
+  onText(values) {
+    this.user[this.variable] = values[0];
+    // this.addMsgs([
+    //   {
+    //     id: nextID(),
+    //     values: [
+    //       this.answer.replace(/{([\w]+)}?/g, (match, ...p) => this.user[p[0]]),
+    //     ],
+    //     avatar: this.avatar,
+    //     type: 'bot',
+    //   },
+    // ]);
+    this.next();
+  }
+  process() {
     this.addMsgs([
       {
         id: nextID(),
-        value: this.answer.replace(
-          /{([\w]+)}?/g,
-          (match, ...p) => this.user[p[0]]
+        values: this.questions.map(q =>
+          q.replace(/{([\w]+)}?/g, (match, ...p) => this.user[p[0]])
         ),
         avatar: this.avatar,
         type: 'bot',
       },
     ]);
-    this.next();
-  }
-  process() {
-    this.addMsgs(
-      this.questions.map(q => ({
-        id: nextID(),
-        value: q,
-        avatar: this.avatar,
-        type: 'bot',
-      }))
-    );
   }
 }
 

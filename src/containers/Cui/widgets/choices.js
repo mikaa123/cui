@@ -27,7 +27,7 @@ class Choice extends Component {
   handleChoice = c => {
     this.props.addMessage({
       id: c.id,
-      value: c.val,
+      values: [c.val],
       type: 'user',
     });
     this.props.processMsg(this.props.currentMsg);
