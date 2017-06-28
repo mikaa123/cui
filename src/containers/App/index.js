@@ -27,7 +27,7 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (
       (!prevState.step && this.state.step) ||
-      (this.state.step && prevState.step.id !== this.state.step.id)
+      (this.state.step && prevState.step.objectID !== this.state.step.objectID)
     ) {
       this.state.step.process();
     }

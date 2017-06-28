@@ -41,6 +41,7 @@ class MessageBot extends Component {
     }
     return (
       <div className="cui-message cui-message--bot">
+        <img src={this.props.msg.avatar} />
         {this.props.msg.value}
       </div>
     );
