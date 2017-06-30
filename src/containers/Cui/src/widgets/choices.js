@@ -26,7 +26,7 @@ class Choice extends Component {
 
   handleChoice = c => {
     this.props.addMessage({
-      id: c.id,
+      id: c.val,
       values: [c.val],
       type: 'user',
     });
@@ -38,10 +38,15 @@ class Choice extends Component {
       return null;
     }
     return (
-      <div className="cui-choice">
-        Choose:
+      <div className="cui-choices">
         {this.state.choices.map(c =>
-          <p key={c.id} onClick={() => this.handleChoice(c)}>{c.val}</p>
+          <div
+            className="cui-choice"
+            key={c.val}
+            onClick={() => this.handleChoice(c)}
+          >
+            {c.val}
+          </div>
         )}
       </div>
     );

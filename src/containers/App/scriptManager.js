@@ -1,6 +1,6 @@
 import algoliasearch from 'algoliasearch';
 const client = algoliasearch('XNIYVXANUC', '323d115ab6d407b0863f693285cb58e0');
-const index = client.initIndex('steps');
+const index = client.initIndex('seo_steps');
 
 function getNextStep(stepID) {
   return index.getObject(stepID);
@@ -15,17 +15,8 @@ class ChoiceScript {
   }
   onChoice(values) {
     this.user[this.variable] = values[0];
-    // this.addMsgs([
-    //   {
-    //     id: nextID(),
-    //     values: [
-    //       this.answer.replace(/{([\w]+)}?/g, (match, ...p) => this.user[p[0]]),
-    //     ],
-    //     avatar: this.avatar,
-    //     type: 'bot',
-    //   },
-    // ]);
-    this.next();
+    const c = this.choices.find(f => f.val === values[0]);
+    this.next(c.next);
   }
   process() {
     this.addMsgs([
@@ -38,6 +29,7 @@ class ChoiceScript {
         type: 'bot',
       },
       {
+        id: nextID(),
         type: 'choice',
         choices: this.choices,
       },
@@ -51,16 +43,6 @@ class QuestionScript {
   }
   onText(values) {
     this.user[this.variable] = values[0];
-    // this.addMsgs([
-    //   {
-    //     id: nextID(),
-    //     values: [
-    //       this.answer.replace(/{([\w]+)}?/g, (match, ...p) => this.user[p[0]]),
-    //     ],
-    //     avatar: this.avatar,
-    //     type: 'bot',
-    //   },
-    // ]);
     this.next();
   }
   process() {
@@ -84,13 +66,13 @@ class ScriptManager {
     this.user = {};
     this.currentStep = null;
   }
-  nextStep() {
+  nextStep(next) {
     let nextStepID;
 
     if (!this.currentStep) {
-      nextStepID = 'name';
+      nextStepID = 'greetings';
     } else {
-      nextStepID = this.currentStep.next;
+      nextStepID = next || this.currentStep.next;
     }
 
     if (!nextStepID) {
@@ -109,8 +91,12 @@ class ScriptManager {
         this.nextStep()
       );
     } else if (step.type === 'choice') {
-      return new ChoiceScript(step, this.addMsgs, this.user, () =>
-        this.nextStep()
+      return new ChoiceScript(step, this.addMsgs, this.user, next =>
+        this.nextStep(next)
+      );
+    } else if (step.type === 'fork') {
+      return new ForkScript(step, this.addMsgs, this.user, next =>
+        this.nextStep(next)
       );
     }
     return null;

@@ -1,0 +1,37 @@
+.cui-sequence {
+  display: flex;
+
+  .cui-sequence__messages {
+    width: 100%;
+  }
+
+  .cui-avatar {
+    align-self: flex-end;
+    margin-bottom: 10px;
+    img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50px;
+    }
+  }
+
+  .cui-typing, .cui-message {
+    line-height: 30px;
+    display: inline-block;
+    color: #434a54;
+    border-radius: 8px;
+    padding: 12px 24px;
+    margin-bottom: 10px;
+    background-color: #f4f4f4;
+  }
+}
+
+.cui-sequence.cui-sequence--bot {
+  .cui-avatar {
+    margin-right: 10px;
+  }
+}
+
+.cui-sequence.cui-sequence--user {
+  text-align: right;
+}

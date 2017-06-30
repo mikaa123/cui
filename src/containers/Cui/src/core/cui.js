@@ -25,7 +25,10 @@ class Cui extends Component {
   };
 
   getChildContext() {
-    return { state: { ...this.state }, processMsg: this.processMsg };
+    return {
+      state: { ...this.state },
+      processMsg: this.processMsg,
+    };
   }
 
   componentDidMount() {
@@ -75,7 +78,7 @@ class Cui extends Component {
 
   render() {
     return (
-      <div>
+      <div className="cui">
         {this.props.children}
       </div>
     );

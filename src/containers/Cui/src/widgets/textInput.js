@@ -15,6 +15,12 @@ class TextInput extends Component {
     };
   }
 
+  componentDidUpdate() {
+    if (!this.props.isBusy) {
+      this.input.focus();
+    }
+  }
+
   handleChange = e => {
     this.setState({ msg: e.target.value });
   };
@@ -31,12 +37,16 @@ class TextInput extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form className="cui-text-input" onSubmit={this.handleSubmit}>
         <input
           type="text"
           value={this.state.msg}
           onChange={this.handleChange}
           disabled={this.props.isBusy}
+          placeholder="Write your answer..."
+          ref={input => {
+            this.input = input;
+          }}
         />
       </form>
     );

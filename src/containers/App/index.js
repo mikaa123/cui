@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { addMessages } from './../../actions';
-import { Cui } from '../Cui';
-import { Messages, Choices, TextInput } from '../Cui/widgets';
+import { Cui, CuiPanel } from '../Cui/src';
+import { Messages, Choices, TextInput } from '../Cui/src/widgets';
 import ScriptManager from './scriptManager';
+import '../Cui/theme/style.scss';
+import './style.scss';
 
 class App extends Component {
   static propTypes = {
@@ -41,25 +43,29 @@ class App extends Component {
 
   render() {
     return (
-      <Cui msgs={this.props.msgs}>
-        <Messages />
-        <Choices
-          addMessage={msg => {
-            this.addMsg(msg);
-            if (this.state.step) {
-              this.state.step.onChoice(msg.values);
-            }
-          }}
-        />
-        <TextInput
-          addMessage={msg => {
-            this.addMsg(msg);
-            if (this.state.step) {
-              this.state.step.onText(msg.values);
-            }
-          }}
-        />
-      </Cui>
+      <div className="wrapper">
+        <Cui msgs={this.props.msgs}>
+          <CuiPanel>
+            <Messages />
+            <Choices
+              addMessage={msg => {
+                this.addMsg(msg);
+                if (this.state.step) {
+                  this.state.step.onChoice(msg.values);
+                }
+              }}
+            />
+          </CuiPanel>
+          <TextInput
+            addMessage={msg => {
+              this.addMsg(msg);
+              if (this.state.step) {
+                this.state.step.onText(msg.values);
+              }
+            }}
+          />
+        </Cui>
+      </div>
     );
   }
 }
