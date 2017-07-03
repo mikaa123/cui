@@ -33,6 +33,10 @@ const script = [
         val: "I'm a noob",
         next: 'noob',
       },
+      {
+        val: 'Actually, I already have a question',
+        next: 'openq',
+      },
     ],
     avatar:
       'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
@@ -71,11 +75,92 @@ const script = [
     avatar:
       'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
   },
+  {
+    objectID: 'openq',
+    type: 'askOpenQuestion',
+  },
+];
+
+const openQuestions = [
+  {
+    objectID: 'openq1',
+    type: 'openQuestion',
+    questions: ['What is UX?'],
+    answers: [
+      'It stands for User Experience',
+      "It's the general feeling a user gets when using your service. Are they happy, sad? Do they find what they are looking for?",
+    ],
+    avatar:
+      'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+  },
+  {
+    objectID: 'openq2',
+    type: 'openQuestion',
+    questions: ['Does Algolia support SEO??'],
+    answers: ['Some answer', 'Some more answer'],
+    avatar:
+      'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+  },
+  {
+    objectID: 'openq3',
+    type: 'openQuestion',
+    questions: ['Should I do prerendering?'],
+    answers: ['Some answer', 'Some more answer'],
+    avatar:
+      'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+  },
+  {
+    objectID: 'openq4',
+    type: 'openQuestion',
+    questions: ['How should I handle infinite scroll?'],
+    answers: ['Some answer', 'Some more answer'],
+    avatar:
+      'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+  },
+  {
+    type: 'openQuestion',
+    questions: ["My content isn't indexed by google"],
+    answers: ['Some answer', 'Some more answer'],
+    avatar:
+      'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+  },
+  {
+    objectID: 'openq5',
+    type: 'openQuestion',
+    questions: ['What is server-side rendering?'],
+    answers: ['Some answer', 'Some more answer'],
+    avatar:
+      'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+  },
+  {
+    objectID: 'openq6',
+    type: 'openQuestion',
+    questions: ['How do I implement server-side rendering?'],
+    answers: ['Some answer', 'Some more answer'],
+    avatar:
+      'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+  },
+  {
+    objectID: 'openq7',
+    type: 'openQuestion',
+    questions: ['What is a sitemap?'],
+    answers: ['Some answer', 'Some more answer'],
+    avatar:
+      'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+  },
+  {
+    objectID: 'openq8',
+    type: 'openQuestion',
+    questions: ['How do I generate a sitemap from Algolia?'],
+    answers: ['Some answer', 'Some more answer'],
+    avatar:
+      'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+  },
 ];
 
 index
   .clearIndex()
-  .then(() => index.addObjects(script))
+  .then(() => index.addObjects([...script, ...openQuestions]))
   .then(res => {
     console.log('Updated', res);
   })
