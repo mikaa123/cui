@@ -5,6 +5,7 @@ import cuiConnect from '../core/cuiConnect';
 class TextInput extends Component {
   static propTypes = {
     onText: PropTypes.func.isRequired,
+    addMessage: PropTypes.func.isRequired,
     isBusy: PropTypes.bool.isRequired,
   };
 
@@ -27,11 +28,12 @@ class TextInput extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    this.props.onText({
+    this.props.addMessage({
       id: this.state.msg,
       values: [this.state.msg],
       type: 'user',
     });
+    this.props.onText(this.state.msg);
     this.setState({ msg: '' });
   };
 

@@ -64,10 +64,17 @@ class Cui extends Component {
 
   processMsg = msg => {
     if (msg) {
-      this.setState({
-        msgs: this.state.msgs.concat(msg),
-        currentMsg: null,
-      });
+      this.setState(
+        {
+          msgs: this.state.msgs.concat(msg),
+          currentMsg: null,
+        },
+        () => {
+          if (msg.doneCb) {
+            msg.doneCb();
+          }
+        }
+      );
     }
     this.isProcessing = false;
     if (!this.msgQueue.length) {

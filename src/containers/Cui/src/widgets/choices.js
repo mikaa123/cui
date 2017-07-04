@@ -7,6 +7,7 @@ class Choice extends Component {
     currentMsg: PropTypes.object,
     processMsg: PropTypes.func.isRequired,
     onChoice: PropTypes.func.isRequired,
+    addMessage: PropTypes.func.isRequired,
   };
 
   state = {
@@ -25,14 +26,12 @@ class Choice extends Component {
   }
 
   handleChoice = c => {
-    this.props.onChoice(
-      {
-        id: c.val,
-        values: [c.val],
-        type: 'user',
-      },
-      c.next
-    );
+    this.props.addMessage({
+      id: c.val,
+      values: [c.val],
+      type: 'user',
+    });
+    this.props.onChoice(c, c.next);
     this.props.processMsg(this.props.currentMsg);
   };
 

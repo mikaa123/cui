@@ -14,7 +14,7 @@ class AutocompleteChoice extends Component {
         className="ask-autocomplete"
         onClick={() => this.props.handleClick(this.props.step)}
       >
-        {this.props.step.questions[0]}
+        {this.props.step.question}
       </div>
     );
   }
@@ -23,6 +23,7 @@ class AutocompleteChoice extends Component {
 class TextInputAutocomplete extends Component {
   static propTypes = {
     onText: PropTypes.func.isRequired,
+    addMessage: PropTypes.func.isRequired,
     appID: PropTypes.string.isRequired,
     apiKey: PropTypes.string.isRequired,
     indexName: PropTypes.string.isRequired,
@@ -43,7 +44,7 @@ class TextInputAutocomplete extends Component {
     if (nextState.msg !== this.state.msg) {
       this.index
         .search(nextState.msg, {
-          filters: 'type: openQuestion',
+          filters: 'type: SEQUENCE_QUESTION',
         })
         .then(res => {
           this.setState({
@@ -58,7 +59,7 @@ class TextInputAutocomplete extends Component {
   }
 
   handleClick = step => {
-    this.setState({ selectedStep: step, msg: step.questions[0] });
+    this.setState({ selectedStep: step, msg: step.question });
   };
 
   handleChange = e => {
@@ -72,14 +73,12 @@ class TextInputAutocomplete extends Component {
     if (!this.state.selectedStep) {
       return;
     }
-    this.props.onText(
-      {
-        id: this.state.msg,
-        values: [this.state.msg],
-        type: 'user',
-      },
-      this.state.selectedStep.objectID
-    );
+    this.props.addMessage({
+      id: this.state.msg,
+      values: [this.state.msg],
+      type: 'user',
+    });
+    this.props.onText(this.state.msg, this.state.selectedStep);
   };
 
   render() {

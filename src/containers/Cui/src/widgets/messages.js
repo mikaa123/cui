@@ -27,7 +27,7 @@ class MessageBot extends Component {
 
   typeMsg() {
     const value = this.props.msg.values.shift();
-    const delay = this.props.delay || value.length / (1200 / 60) * 1000;
+    const delay = this.props.delay || value.length / (1400 / 60) * 1000;
     this.setState(
       {
         isTyping: true,

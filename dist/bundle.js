@@ -16280,7 +16280,7 @@ var AutocompleteChoice = function (_Component) {
             return _this2.props.handleClick(_this2.props.step);
           }
         },
-        this.props.step.questions[0]
+        this.props.step.question
       );
     }
   }]);
@@ -16302,7 +16302,7 @@ var TextInputAutocomplete = function (_Component2) {
     var _this3 = _possibleConstructorReturn(this, (TextInputAutocomplete.__proto__ || Object.getPrototypeOf(TextInputAutocomplete)).call(this, props));
 
     _this3.handleClick = function (step) {
-      _this3.setState({ selectedStep: step, msg: step.questions[0] });
+      _this3.setState({ selectedStep: step, msg: step.question });
     };
 
     _this3.handleChange = function (e) {
@@ -16316,11 +16316,12 @@ var TextInputAutocomplete = function (_Component2) {
       if (!_this3.state.selectedStep) {
         return;
       }
-      _this3.props.onText({
+      _this3.props.addMessage({
         id: _this3.state.msg,
         values: [_this3.state.msg],
         type: 'user'
-      }, _this3.state.selectedStep.objectID);
+      });
+      _this3.props.onText(_this3.state.msg, _this3.state.selectedStep);
     };
 
     _this3.state = {
@@ -16340,7 +16341,7 @@ var TextInputAutocomplete = function (_Component2) {
 
       if (nextState.msg !== this.state.msg) {
         this.index.search(nextState.msg, {
-          filters: 'type: openQuestion'
+          filters: 'type: SEQUENCE_QUESTION'
         }).then(function (res) {
           _this4.setState({
             steps: res.hits.slice(0, 3)
@@ -16395,6 +16396,7 @@ var TextInputAutocomplete = function (_Component2) {
 
 TextInputAutocomplete.propTypes = {
   onText: _propTypes2.default.func.isRequired,
+  addMessage: _propTypes2.default.func.isRequired,
   appID: _propTypes2.default.string.isRequired,
   apiKey: _propTypes2.default.string.isRequired,
   indexName: _propTypes2.default.string.isRequired
@@ -16414,8 +16416,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _class, _temp;
-
 var _react = __webpack_require__(17);
 
 var _react2 = _interopRequireDefault(_react);
@@ -16432,10 +16432,6 @@ var _src = __webpack_require__(248);
 
 var _widgets = __webpack_require__(161);
 
-var _scriptManager = __webpack_require__(245);
-
-var _scriptManager2 = _interopRequireDefault(_scriptManager);
-
 var _TextInputAutocomplete = __webpack_require__(243);
 
 var _TextInputAutocomplete2 = _interopRequireDefault(_TextInputAutocomplete);
@@ -16443,6 +16439,10 @@ var _TextInputAutocomplete2 = _interopRequireDefault(_TextInputAutocomplete);
 __webpack_require__(567);
 
 __webpack_require__(566);
+
+var _interactions = __webpack_require__(575);
+
+var _interactions2 = _interopRequireDefault(_interactions);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -16452,44 +16452,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var HiddenIfBusy = (0, _src.cuiConnect)(function (state) {
-  return { isBusy: state.isBusy };
-})((_temp = _class = function (_Component) {
-  _inherits(HiddenIfBusy, _Component);
-
-  function HiddenIfBusy() {
-    _classCallCheck(this, HiddenIfBusy);
-
-    return _possibleConstructorReturn(this, (HiddenIfBusy.__proto__ || Object.getPrototypeOf(HiddenIfBusy)).apply(this, arguments));
-  }
-
-  _createClass(HiddenIfBusy, [{
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        {
-          style: this.props.isBusy || this.props.conditions ? { display: 'none' } : null
-        },
-        this.props.children
-      );
-    }
-  }]);
-
-  return HiddenIfBusy;
-}(_react.Component), _class.propTypes = {
-  isBusy: _propTypes2.default.bool.isRequired,
-  conditions: _propTypes2.default.bool,
-  children: _propTypes2.default.node.isRequired
-}, _temp));
-
-var App = function (_Component2) {
-  _inherits(App, _Component2);
+var App = function (_Component) {
+  _inherits(App, _Component);
 
   function App() {
     var _ref;
 
-    var _temp2, _this2, _ret;
+    var _temp, _this, _ret;
 
     _classCallCheck(this, App);
 
@@ -16497,32 +16466,46 @@ var App = function (_Component2) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp2 = (_this2 = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this2), _this2.state = {
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = App.__proto__ || Object.getPrototypeOf(App)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
       step: null
-    }, _this2.onStep = function (step) {
-      _this2.setState({ step: step });
-    }, _this2.onValue = function (msg, next) {
-      _this2.props.dispatch((0, _actions.addMessages)([msg]));
-      _this2.state.step.onValue(msg.values[0], next);
-    }, _temp2), _possibleConstructorReturn(_this2, _ret);
+    }, _this.addMessage = function (msg) {
+      return _this.props.dispatch((0, _actions.addMessages)([msg]));
+    }, _this.onStep = function (step) {
+      _this.setState({ step: step });
+    }, _this.onValue = function (msg, ref) {
+      _this.state.step.onValue(msg, ref);
+    }, _this.onChoice = function (c, ref) {
+      _this.state.step.onValue(c, ref);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(App, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var _this3 = this;
-
-      this.scriptManager = new _scriptManager2.default(function (msgs) {
-        return _this3.props.dispatch((0, _actions.addMessages)(msgs));
-      }, this.onStep);
-      this.scriptManager.nextStep('greetings');
+      this.mainSequence = (0, _interactions2.default)({ type: 'STEP_REF', ref: 'intro' }, {}, {
+        addMessage: this.addMessage,
+        onStep: this.onStep
+      });
+      this.mainSequence.process();
     }
   }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps, prevState) {
-      if (!prevState.step && this.state.step || this.state.step && prevState.step.objectID !== this.state.step.objectID) {
-        this.state.step.process();
+    key: 'renderInput',
+    value: function renderInput() {
+      if (!this.state.step) {
+        return null;
       }
+      if (this.state.step.type === 'STEP_ANSWER') {
+        return _react2.default.createElement(_widgets.TextInput, { onText: this.onValue, addMessage: this.addMessage });
+      } else if (this.state.step.type === 'STEP_ASK') {
+        return _react2.default.createElement(_TextInputAutocomplete2.default, {
+          appID: 'XNIYVXANUC',
+          apiKey: '323d115ab6d407b0863f693285cb58e0',
+          indexName: 'seo_steps',
+          onText: this.onValue,
+          addMessage: this.addMessage
+        });
+      }
+      return null;
     }
   }, {
     key: 'render',
@@ -16536,21 +16519,10 @@ var App = function (_Component2) {
           _react2.default.createElement(
             _src.CuiPanel,
             null,
-            _react2.default.createElement(_widgets.Messages, { delay: 100 }),
-            _react2.default.createElement(_widgets.Choices, { onChoice: this.onValue })
+            _react2.default.createElement(_widgets.Messages, { delay: 300 }),
+            _react2.default.createElement(_widgets.Choices, { onChoice: this.onChoice, addMessage: this.addMessage })
           ),
-          _react2.default.createElement(
-            HiddenIfBusy,
-            {
-              conditions: Boolean(!this.state.step || this.state.step.type !== 'question' && this.state.step.type !== 'askOpenQuestion')
-            },
-            this.state.step && this.state.step.ask ? _react2.default.createElement(_TextInputAutocomplete2.default, {
-              appID: 'XNIYVXANUC',
-              apiKey: '323d115ab6d407b0863f693285cb58e0',
-              indexName: 'seo_steps',
-              onText: this.onValue
-            }) : _react2.default.createElement(_widgets.TextInput, { onText: this.onValue })
-          )
+          this.renderInput()
         )
       );
     }
@@ -16568,232 +16540,7 @@ exports.default = (0, _reactRedux.connect)(function (state) {
 })(App);
 
 /***/ }),
-/* 245 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _algoliasearch = __webpack_require__(155);
-
-var _algoliasearch2 = _interopRequireDefault(_algoliasearch);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var client = (0, _algoliasearch2.default)('XNIYVXANUC', '323d115ab6d407b0863f693285cb58e0');
-var index = client.initIndex('seo_steps');
-
-function getNextStep(stepID) {
-  return index.getObject(stepID);
-}
-
-var id = 0;
-var nextID = function nextID() {
-  return '' + ++id;
-};
-
-var OpenQuestionScript = function () {
-  function OpenQuestionScript(step, addMsgs, user, next) {
-    _classCallCheck(this, OpenQuestionScript);
-
-    Object.assign(this, step, { addMsgs: addMsgs, user: user, next: next });
-  }
-
-  _createClass(OpenQuestionScript, [{
-    key: 'process',
-    value: function process() {
-      var _this = this;
-
-      this.addMsgs([{
-        id: nextID(),
-        values: this.answers.map(function (q) {
-          return q.replace(/{([\w]+)}?/g, function (match) {
-            for (var _len = arguments.length, p = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-              p[_key - 1] = arguments[_key];
-            }
-
-            return _this.user[p[0]];
-          });
-        }),
-        avatar: this.avatar,
-        type: 'bot'
-      }, {
-        id: nextID(),
-        type: 'choice',
-        choices: this.choices
-      }]);
-    }
-  }]);
-
-  return OpenQuestionScript;
-}();
-
-var AskOpenQuestionScript = function () {
-  function AskOpenQuestionScript(step, addMsgs, user, next) {
-    _classCallCheck(this, AskOpenQuestionScript);
-
-    Object.assign(this, step, { addMsgs: addMsgs, user: user, next: next });
-    this.ask = true;
-  }
-
-  _createClass(AskOpenQuestionScript, [{
-    key: 'onValue',
-    value: function onValue(value, next) {
-      this.next(next);
-    }
-  }, {
-    key: 'process',
-    value: function process() {}
-  }]);
-
-  return AskOpenQuestionScript;
-}();
-
-var ChoiceScript = function () {
-  function ChoiceScript(step, addMsgs, user, next) {
-    _classCallCheck(this, ChoiceScript);
-
-    Object.assign(this, step, { addMsgs: addMsgs, user: user, next: next });
-  }
-
-  _createClass(ChoiceScript, [{
-    key: 'onValue',
-    value: function onValue(value, next) {
-      this.user[this.variable] = value;
-      this.next(next);
-    }
-  }, {
-    key: 'process',
-    value: function process() {
-      var _this2 = this;
-
-      this.addMsgs([{
-        id: nextID(),
-        values: this.questions.map(function (q) {
-          return q.replace(/{([\w]+)}?/g, function (match) {
-            for (var _len2 = arguments.length, p = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-              p[_key2 - 1] = arguments[_key2];
-            }
-
-            return _this2.user[p[0]];
-          });
-        }),
-        avatar: this.avatar,
-        type: 'bot'
-      }, {
-        id: nextID(),
-        type: 'choice',
-        choices: this.choices
-      }]);
-    }
-  }]);
-
-  return ChoiceScript;
-}();
-
-var QuestionScript = function () {
-  function QuestionScript(step, addMsgs, user, next) {
-    _classCallCheck(this, QuestionScript);
-
-    Object.assign(this, step, { addMsgs: addMsgs, user: user, next: next });
-  }
-
-  _createClass(QuestionScript, [{
-    key: 'onValue',
-    value: function onValue(value) {
-      this.user[this.variable] = value;
-      this.next();
-    }
-  }, {
-    key: 'process',
-    value: function process() {
-      var _this3 = this;
-
-      this.addMsgs([{
-        id: nextID(),
-        values: this.questions.map(function (q) {
-          return q.replace(/{([\w]+)}?/g, function (match) {
-            for (var _len3 = arguments.length, p = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-              p[_key3 - 1] = arguments[_key3];
-            }
-
-            return _this3.user[p[0]];
-          });
-        }),
-        avatar: this.avatar,
-        type: 'bot'
-      }]);
-    }
-  }]);
-
-  return QuestionScript;
-}();
-
-var ScriptManager = function () {
-  function ScriptManager(addMsgs, onStep) {
-    _classCallCheck(this, ScriptManager);
-
-    this.addMsgs = addMsgs;
-    this.onStep = onStep;
-    this.user = {};
-    this.currentStep = null;
-  }
-
-  _createClass(ScriptManager, [{
-    key: 'nextStep',
-    value: function nextStep(next) {
-      var _this4 = this;
-
-      var nextStepID = next || this.currentStep.next;
-      if (!nextStepID) {
-        this.onStep(null);
-        return;
-      }
-      getNextStep(nextStepID).then(function (step) {
-        _this4.currentStep = step;
-        _this4.onStep(_this4.createStep(step));
-      });
-    }
-  }, {
-    key: 'createStep',
-    value: function createStep(step) {
-      var _this5 = this;
-
-      if (step.type === 'question') {
-        return new QuestionScript(step, this.addMsgs, this.user, function () {
-          return _this5.nextStep();
-        });
-      } else if (step.type === 'choice') {
-        return new ChoiceScript(step, this.addMsgs, this.user, function (next) {
-          return _this5.nextStep(next);
-        });
-      } else if (step.type === 'askOpenQuestion') {
-        return new AskOpenQuestionScript(step, this.addMsgs, this.user, function (next) {
-          return _this5.nextStep(next);
-        });
-      } else if (step.type === 'openQuestion') {
-        return new OpenQuestionScript(step, this.addMsgs, this.user, function (next) {
-          return _this5.nextStep(next);
-        });
-      }
-      return null;
-    }
-  }]);
-
-  return ScriptManager;
-}();
-
-exports.default = ScriptManager;
-
-/***/ }),
+/* 245 */,
 /* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -16839,6 +16586,10 @@ var Cui = function (_Component) {
         _this.setState({
           msgs: _this.state.msgs.concat(msg),
           currentMsg: null
+        }, function () {
+          if (msg.doneCb) {
+            msg.doneCb();
+          }
         });
       }
       _this.isProcessing = false;
@@ -17108,11 +16859,12 @@ var Choice = function (_Component) {
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Choice.__proto__ || Object.getPrototypeOf(Choice)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
       choices: []
     }, _this.handleChoice = function (c) {
-      _this.props.onChoice({
+      _this.props.addMessage({
         id: c.val,
         values: [c.val],
         type: 'user'
-      }, c.next);
+      });
+      _this.props.onChoice(c, c.next);
       _this.props.processMsg(_this.props.currentMsg);
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
@@ -17163,7 +16915,8 @@ var Choice = function (_Component) {
 Choice.propTypes = {
   currentMsg: _propTypes2.default.object,
   processMsg: _propTypes2.default.func.isRequired,
-  onChoice: _propTypes2.default.func.isRequired
+  onChoice: _propTypes2.default.func.isRequired,
+  addMessage: _propTypes2.default.func.isRequired
 };
 exports.default = (0, _cuiConnect2.default)(function (state, processMsg) {
   return {
@@ -17253,7 +17006,7 @@ var MessageBot = function (_Component2) {
       var _this3 = this;
 
       var value = this.props.msg.values.shift();
-      var delay = this.props.delay || value.length / (1200 / 60) * 1000;
+      var delay = this.props.delay || value.length / (1400 / 60) * 1000;
       this.setState({
         isTyping: true
       }, function () {
@@ -17498,11 +17251,12 @@ var TextInput = function (_Component) {
 
     _this.handleSubmit = function (e) {
       e.preventDefault();
-      _this.props.onText({
+      _this.props.addMessage({
         id: _this.state.msg,
         values: [_this.state.msg],
         type: 'user'
       });
+      _this.props.onText(_this.state.msg);
       _this.setState({ msg: '' });
     };
 
@@ -17546,6 +17300,7 @@ var TextInput = function (_Component) {
 
 TextInput.propTypes = {
   onText: _propTypes2.default.func.isRequired,
+  addMessage: _propTypes2.default.func.isRequired,
   isBusy: _propTypes2.default.bool.isRequired
 };
 exports.default = (0, _cuiConnect2.default)(function (state) {
@@ -36577,6 +36332,284 @@ module.exports = function(module) {
 __webpack_require__(230);
 module.exports = __webpack_require__(229);
 
+
+/***/ }),
+/* 574 */,
+/* 575 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _algoliasearch = __webpack_require__(155);
+
+var _algoliasearch2 = _interopRequireDefault(_algoliasearch);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var client = (0, _algoliasearch2.default)('XNIYVXANUC', '323d115ab6d407b0863f693285cb58e0');
+var index = client.initIndex('seo_steps');
+
+var id = 0;
+var nextID = function nextID() {
+  return '' + ++id;
+};
+
+function getName(name) {
+  return index.getObject(name);
+}
+
+var ChooseStep = function () {
+  function ChooseStep(step, state, cmds, done) {
+    _classCallCheck(this, ChooseStep);
+
+    if (!step.choices) {
+      throw new Error('ChooseStep with no choices');
+    }
+    Object.assign(this, step, { state: state, cmds: cmds, done: done });
+  }
+
+  _createClass(ChooseStep, [{
+    key: 'onValue',
+    value: function onValue(choice, ref) {
+      var _this = this;
+
+      if (this.variable) {
+        this.user[this.variable] = choice;
+      }
+      if (!ref) {
+        this.done();
+        return;
+      }
+      getName(ref).then(function (interaction) {
+        var cI = createChatInteraction(interaction, _this.state, _this.cmds, function () {
+          if (!choice.fork && _this.done) {
+            _this.done();
+          }
+        });
+        cI.process();
+      });
+    }
+  }, {
+    key: 'process',
+    value: function process() {
+      this.cmds.onStep(this);
+      this.cmds.addMessage({
+        id: nextID(),
+        type: 'choice',
+        choices: this.choices
+      });
+    }
+  }]);
+
+  return ChooseStep;
+}();
+
+var RefStep = function () {
+  function RefStep(step, state, cmds, done) {
+    _classCallCheck(this, RefStep);
+
+    if (!step.ref) {
+      throw new Error('RefStep with no ref');
+    }
+    Object.assign(this, step, { state: state, cmds: cmds, done: done });
+  }
+
+  _createClass(RefStep, [{
+    key: 'process',
+    value: function process() {
+      var _this2 = this;
+
+      getName(this.ref).then(function (interaction) {
+        var cI = createChatInteraction(interaction, _this2.state, _this2.cmds, function () {
+          if (_this2.done) {
+            _this2.done();
+          }
+        });
+        cI.process();
+      });
+    }
+  }]);
+
+  return RefStep;
+}();
+
+var AskStep = function () {
+  function AskStep(step, state, cmds, done) {
+    _classCallCheck(this, AskStep);
+
+    Object.assign(this, step, { state: state, cmds: cmds, done: done });
+  }
+
+  _createClass(AskStep, [{
+    key: 'onValue',
+    value: function onValue(value, seq) {
+      var _this3 = this;
+
+      if (!seq) {
+        return;
+      }
+      var cI = createChatInteraction(seq, this.state, this.cmds, function () {
+        if (_this3.done) {
+          _this3.done();
+        }
+      });
+      cI.process();
+    }
+  }, {
+    key: 'process',
+    value: function process() {
+      this.cmds.onStep(this);
+    }
+  }]);
+
+  return AskStep;
+}();
+
+var AnswerStep = function () {
+  function AnswerStep(step, state, cmds, done) {
+    _classCallCheck(this, AnswerStep);
+
+    if (!step.variable) {
+      throw new Error('AnswerStep with no variable');
+    }
+    Object.assign(this, step, { state: state, cmds: cmds, done: done });
+  }
+
+  _createClass(AnswerStep, [{
+    key: 'onValue',
+    value: function onValue(value) {
+      this.state[this.variable] = value;
+      this.done();
+    }
+  }, {
+    key: 'process',
+    value: function process() {
+      this.cmds.onStep(this);
+    }
+  }]);
+
+  return AnswerStep;
+}();
+
+var TellStep = function () {
+  function TellStep(step, state, cmds, done) {
+    _classCallCheck(this, TellStep);
+
+    Object.assign(this, step, { state: state, cmds: cmds, done: done });
+  }
+
+  _createClass(TellStep, [{
+    key: 'process',
+    value: function process() {
+      var _this4 = this;
+
+      this.cmds.onStep(this);
+      this.cmds.addMessage({
+        id: nextID(),
+        values: this.text.map(function (q) {
+          return q.replace(/{([\w]+)}?/g, function (match) {
+            for (var _len = arguments.length, p = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+              p[_key - 1] = arguments[_key];
+            }
+
+            return _this4.state[p[0]];
+          });
+        }),
+        avatar: this.avatar,
+        type: 'bot',
+        doneCb: function doneCb() {
+          _this4.done();
+        }
+      });
+    }
+  }]);
+
+  return TellStep;
+}();
+
+var Sequence = function () {
+  function Sequence(sequence, state, cmds, done) {
+    var _this5 = this;
+
+    _classCallCheck(this, Sequence);
+
+    this.nextInteraction = function () {
+      if (_this5.currentIndex === _this5.interactions.length) {
+        if (_this5.done) {
+          _this5.done();
+        }
+        return;
+      }
+      var cI = createChatInteraction(_this5.interactions[_this5.currentIndex], _this5.state, _this5.cmds, _this5.nextInteraction);
+      _this5.currentIndex++;
+      cI.process();
+    };
+
+    this.interactions = sequence.interactions;
+    this.state = state || {};
+    this.cmds = cmds;
+    this.done = done;
+    this.currentIndex = 0;
+  }
+
+  _createClass(Sequence, [{
+    key: 'process',
+    value: function process() {
+      this.cmds.onStep(this);
+      this.nextInteraction();
+    }
+  }]);
+
+  return Sequence;
+}();
+
+function createChatInteraction(interaction, state, cmds, done) {
+  var newInteraction = void 0;
+  switch (interaction.type) {
+    case 'SEQUENCE':
+      newInteraction = new Sequence(interaction, state, cmds, done);
+      break;
+
+    case 'SEQUENCE_QUESTION':
+      newInteraction = new Sequence(interaction, state, cmds, done);
+      break;
+
+    case 'STEP_REF':
+      newInteraction = new RefStep(interaction, state, cmds, done);
+      break;
+
+    case 'STEP_TELL':
+      newInteraction = new TellStep(interaction, state, cmds, done);
+      break;
+
+    case 'STEP_ANSWER':
+      newInteraction = new AnswerStep(interaction, state, cmds, done);
+      break;
+
+    case 'STEP_CHOOSE':
+      newInteraction = new ChooseStep(interaction, state, cmds, done);
+      break;
+
+    case 'STEP_ASK':
+      newInteraction = new AskStep(interaction, state, cmds, done);
+      break;
+
+    default:
+      throw new Error('Unknown interaction type ' + interaction.type);
+  }
+  return newInteraction;
+}
+
+exports.default = createChatInteraction;
 
 /***/ })
 ],[573]);
