@@ -19,6 +19,18 @@ const interactions = [
           'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
       },
       { type: 'STEP_REF', ref: 'choose1' },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'name',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: ['What should I call you?'],
+        avatar:
+          'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+      },
       {
         type: 'STEP_ANSWER',
         variable: 'name',
@@ -45,8 +57,8 @@ const interactions = [
         choices: [
           {
             val: "Cool let's chat about SEO!",
-            // next: 'basics',
-            // fork: true,
+            next: 'name',
+            fork: true,
           },
           {
             val: 'Why an experiment?',
@@ -55,7 +67,7 @@ const interactions = [
           },
           {
             val: 'Wait, what is Algolia?',
-            // next: 'openq',
+            next: 'algolia',
           },
         ],
       },
@@ -196,7 +208,68 @@ const interactions = [
           {
             val: 'Sounds exciting!',
           },
+          {
+            val: "What's different?",
+            next: 'experiment-different',
+          },
         ],
+      },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'experiment-different',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          "There's no need to have any server, since all the chat script is stored in Algolia.",
+          "There's also another feature that can be pretty useful, and can make a conversation feel more natural...",
+        ],
+        avatar:
+          'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'What is it?',
+          },
+        ],
+      },
+      {
+        type: 'STEP_TELL',
+        text: [
+          'I call it "open question", which is... well, a mechanism that allows you to ask pre-defined open-questions.',
+          'Want to try?',
+        ],
+        avatar:
+          'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'Sure',
+          },
+        ],
+      },
+      {
+        type: 'STEP_TELL',
+        text: [
+          'Awesome! You will see a text field appear. Simply start typing keywords and you will see questions to ask.',
+          'I have restricted the topic of the question to only match those about the experiment.',
+          "It's all handled thanks to facets on Algolia",
+        ],
+        avatar:
+          'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+      },
+      {
+        type: 'STEP_ASK',
+        topic: 'experiment',
+      },
+      {
+        type: 'STEP_ASK',
       },
     ],
   },
@@ -218,6 +291,19 @@ const interactions = [
 ];
 
 const questions = [
+  {
+    type: 'SEQUENCE_QUESTION',
+    question: 'Question about the experiment',
+    topic: 'experiment',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: ['Thats a question indeed!'],
+        avatar:
+          'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+      },
+    ],
+  },
   {
     type: 'SEQUENCE_QUESTION',
     question: 'What is X?',
@@ -269,6 +355,45 @@ const questions = [
             next: 'openq',
           },
         ],
+      },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'algolia',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          'Algolia is a search engine that lets people find content in your application.',
+          'Are you a developper?',
+        ],
+        avatar:
+          'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg',
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          { val: 'Yes', next: 'algolia-developper' },
+          { val: 'No, not really', next: 'algolia-business' },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'algolia-developper',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          'Cool. Algolia was built with passion by developer, for developer.',
+          "It's a hosted API with open-source libraries that handle the heavy lifting of client-facing search.",
+        ],
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [{ val: 'Got it' }],
       },
     ],
   },

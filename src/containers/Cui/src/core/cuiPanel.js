@@ -15,6 +15,7 @@ class Panel extends Component {
       onMsg: this.onMsg,
     };
   }
+
   onMsg = () => {
     if (this.panel) {
       this.panel.scrollTop = this.panel.scrollHeight;

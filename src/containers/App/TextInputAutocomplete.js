@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import algoliasearch from 'algoliasearch';
+import { cuiConnect } from '../Cui/src';
 
 class AutocompleteChoice extends Component {
   static propTypes = {
@@ -11,7 +12,7 @@ class AutocompleteChoice extends Component {
   render() {
     return (
       <div
-        className="ask-autocomplete"
+        className="ask-autocomplete cui-choice"
         onClick={() => this.props.handleClick(this.props.step)}
       >
         {this.props.step.question}
@@ -26,6 +27,7 @@ class TextInputAutocomplete extends Component {
     addMessage: PropTypes.func.isRequired,
     appID: PropTypes.string.isRequired,
     apiKey: PropTypes.string.isRequired,
+    topic: PropTypes.string,
     indexName: PropTypes.string.isRequired,
   };
 
@@ -42,9 +44,13 @@ class TextInputAutocomplete extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     if (nextState.msg !== this.state.msg) {
+      const filters = ['type: SEQUENCE_QUESTION'];
+      if (nextProps.topic) {
+        filters.push(`topic:${nextProps.topic}`);
+      }
       this.index
         .search(nextState.msg, {
-          filters: 'type: SEQUENCE_QUESTION',
+          filters: filters.join(' AND '),
         })
         .then(res => {
           this.setState({
@@ -59,7 +65,12 @@ class TextInputAutocomplete extends Component {
   }
 
   handleClick = step => {
-    this.setState({ selectedStep: step, msg: step.question });
+    this.props.addMessage({
+      id: step.question,
+      values: [step.question],
+      type: 'user',
+    });
+    this.props.onText(step.question, step);
   };
 
   handleChange = e => {
@@ -68,23 +79,10 @@ class TextInputAutocomplete extends Component {
     }
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    if (!this.state.selectedStep) {
-      return;
-    }
-    this.props.addMessage({
-      id: this.state.msg,
-      values: [this.state.msg],
-      type: 'user',
-    });
-    this.props.onText(this.state.msg, this.state.selectedStep);
-  };
-
   render() {
     return (
       <div className="ask-autocomplete-wrapper">
-        <div className="ask-autocomplete">
+        <div className="ask-autocomplete cui-choices">
           {this.state.steps.map(s =>
             <AutocompleteChoice
               key={s.objectID}
@@ -93,7 +91,7 @@ class TextInputAutocomplete extends Component {
             />
           )}
         </div>
-        <form className="cui-text-input" onSubmit={this.handleSubmit}>
+        <form className="cui-text-input" onSubmit={e => e.preventDefault()}>
           <input
             type="text"
             value={this.state.msg}
@@ -110,4 +108,6 @@ class TextInputAutocomplete extends Component {
   }
 }
 
-export default TextInputAutocomplete;
+export default cuiConnect((state, processMsg, addMessage) => ({ addMessage }))(
+  TextInputAutocomplete
+);

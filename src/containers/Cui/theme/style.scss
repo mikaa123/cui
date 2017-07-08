@@ -1,6 +1,10 @@
-@import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
-@import 'styles/Sequence', 'styles/TextInput', 'styles/Panel', 'styles/Choice';
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400');
+
+$primary-font: 'Open Sans', sans-serif;
 
 .cui {
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: $primary-font;
+  font-size: 14px;
 }
+
+@import 'styles/Sequence', 'styles/TextInput', 'styles/Panel', 'styles/Choice';

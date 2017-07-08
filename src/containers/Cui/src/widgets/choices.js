@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import cuiConnect from '../core/cuiConnect';
+import Message from '../core/message';
 
 class Choice extends Component {
   static propTypes = {
@@ -26,11 +27,13 @@ class Choice extends Component {
   }
 
   handleChoice = c => {
-    this.props.addMessage({
-      id: c.val,
-      values: [c.val],
-      type: 'user',
-    });
+    this.id = this.id || 0;
+    this.props.addMessage(
+      new Message({
+        values: [c.val],
+        type: 'user',
+      })
+    );
     this.props.onChoice(c, c.next);
     this.props.processMsg(this.props.currentMsg);
   };
@@ -40,22 +43,25 @@ class Choice extends Component {
       return null;
     }
     return (
-      <div className="cui-choices">
-        {this.state.choices.map(c =>
-          <div
-            className="cui-choice"
-            key={c.val}
-            onClick={() => this.handleChoice(c)}
-          >
-            {c.val}
-          </div>
-        )}
+      <div>
+        <div className="cui-choices">
+          {this.state.choices.map(c =>
+            <div
+              className="cui-choice"
+              key={c.val}
+              onClick={() => this.handleChoice(c)}
+            >
+              {c.val}
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 }
 
-export default cuiConnect((state, processMsg) => ({
+export default cuiConnect((state, processMsg, addMessage) => ({
   currentMsg: state.currentMsg,
   processMsg,
+  addMessage,
 }))(Choice);

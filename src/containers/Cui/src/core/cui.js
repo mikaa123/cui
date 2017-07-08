@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 class Cui extends Component {
   static propTypes = {
     msgs: PropTypes.array.isRequired,
+    addMessage: PropTypes.func.isRequired,
     children: PropTypes.PropTypes.node.isRequired,
   };
 
@@ -22,12 +23,14 @@ class Cui extends Component {
   static childContextTypes = {
     state: PropTypes.object.isRequired,
     processMsg: PropTypes.func.isRequired,
+    addMessage: PropTypes.func.isRequired,
   };
 
   getChildContext() {
     return {
       state: { ...this.state },
       processMsg: this.processMsg,
+      addMessage: this.props.addMessage,
     };
   }
 

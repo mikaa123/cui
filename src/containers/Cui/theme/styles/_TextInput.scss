@@ -1,14 +1,17 @@
 .cui-text-input {
   padding-top: 1em;
+  text-align: right;
   input {
-    font-family: 'Josefin Sans', sans-serif;
+    font-family: $primary-font;
     font-size: 1em;
-    width: 100%;
-    border: 0px solid #8ca2c0;
-    border-bottom: 1px solid;
+    width: 50%;
+    border: 0px solid white;
+    border-bottom: 1px solid white;
     line-height: 30px;
     outline: none;
     padding: 12px 24px;
     box-sizing: border-box;
+    color: white;
+    background: rgba(255, 255, 255, 0);
   }
 }

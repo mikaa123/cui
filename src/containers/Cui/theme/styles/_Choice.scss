@@ -1,15 +1,16 @@
 .cui-choices {
-  margin-top: 10px;
+  margin-top: 30px;
   margin-bottom: 10px;
   text-align: right;
+
   .cui-choice {
     line-height: 30px;
     display: inline;
-    color: #434a54;
-    border-radius: 8px;
+    color: white;
+    border-radius: 6px;
     padding: 12px 24px;
-    border: 1px solid #8ca2c0;
     cursor: pointer;
+    background: #3369E7;
   }
   .cui-choice + .cui-choice {
     margin-left: 10px;

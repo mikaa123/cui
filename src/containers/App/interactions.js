@@ -1,9 +1,7 @@
+import { Message } from '../Cui/src';
 import algoliasearch from 'algoliasearch';
 const client = algoliasearch('XNIYVXANUC', '323d115ab6d407b0863f693285cb58e0');
 const index = client.initIndex('seo_steps');
-
-let id = 0;
-const nextID = () => `${++id}`;
 
 function getName(name) {
   return index.getObject(name);
@@ -21,7 +19,7 @@ class ChooseStep {
       this.user[this.variable] = choice;
     }
     if (!ref) {
-      this.done();
+      this.done(choice.branchOut);
       return;
     }
     getName(ref).then(interaction => {
@@ -40,11 +38,12 @@ class ChooseStep {
   }
   process() {
     this.cmds.onStep(this);
-    this.cmds.addMessage({
-      id: nextID(),
-      type: 'choice',
-      choices: this.choices,
-    });
+    this.cmds.addMessage(
+      new Message({
+        type: 'choice',
+        choices: this.choices,
+      })
+    );
   }
 }
 
@@ -114,17 +113,19 @@ class TellStep {
   }
   process() {
     this.cmds.onStep(this);
-    this.cmds.addMessage({
-      id: nextID(),
-      values: this.text.map(q =>
-        q.replace(/{([\w]+)}?/g, (match, ...p) => this.state[p[0]])
-      ),
-      avatar: this.avatar,
-      type: 'bot',
-      doneCb: () => {
-        this.done();
-      },
-    });
+    this.cmds.addMessage(
+      new Message({
+        values: this.text.map(q =>
+          q.replace(/{([\w]+)}?/g, (match, ...p) => this.state[p[0]])
+        ),
+        delay: this.delay,
+        avatar: this.avatar,
+        type: 'bot',
+        doneCb: () => {
+          this.done();
+        },
+      })
+    );
   }
 }
 
@@ -136,8 +137,8 @@ class Sequence {
     this.done = done;
     this.currentIndex = 0;
   }
-  nextInteraction = () => {
-    if (this.currentIndex === this.interactions.length) {
+  nextInteraction = branchOut => {
+    if (branchOut || this.currentIndex === this.interactions.length) {
       if (this.done) {
         this.done();
       }

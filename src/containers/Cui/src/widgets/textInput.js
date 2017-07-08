@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import cuiConnect from '../core/cuiConnect';
+import Message from '../core/message';
 
 class TextInput extends Component {
   static propTypes = {
@@ -28,11 +29,12 @@ class TextInput extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    this.props.addMessage({
-      id: this.state.msg,
-      values: [this.state.msg],
-      type: 'user',
-    });
+    this.props.addMessage(
+      new Message({
+        values: [this.state.msg],
+        type: 'user',
+      })
+    );
     this.props.onText(this.state.msg);
     this.setState({ msg: '' });
   };
@@ -55,6 +57,7 @@ class TextInput extends Component {
   }
 }
 
-export default cuiConnect(state => ({
+export default cuiConnect((state, processMsg, addMessage) => ({
   isBusy: state.isBusy,
+  addMessage,
 }))(TextInput);

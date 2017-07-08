@@ -2,18 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import cuiConnect from '../core/cuiConnect';
 import cuiPanelConnect from '../core/cuiPanelConnect';
-
-class Typing extends Component {
-  render() {
-    return (
-      <div className="cui-typing">
-        <span className="dot" />
-        <span className="dot" />
-        <span className="dot" />
-      </div>
-    );
-  }
-}
+import Typist from 'react-typist';
 
 class MessageBot extends Component {
   static propTypes = {
@@ -26,42 +15,40 @@ class MessageBot extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isTyping: true,
+      isTyping: false,
       values: [],
     };
   }
 
-  typeMsg() {
-    const value = this.props.msg.values.shift();
-    const delay = this.props.delay || value.length / (1400 / 60) * 1000;
-    this.setState(
-      {
-        isTyping: true,
-      },
-      () => this.props.onMsg()
-    );
-    setTimeout(() => {
-      this.setState(state => ({
-        isTyping: false,
-        values: state.values.concat(value),
-      }));
-      if (!this.props.msg.values.length) {
-        this.props.processMsg(this.props.msg);
-        return;
-      }
-      this.typeMsg();
-    }, delay);
-  }
-
   componentDidMount() {
-    this.typeMsg();
+    this.typeNextValue();
   }
 
   componentDidUpdate() {
     this.props.onMsg();
   }
 
+  typeNextValue = () => {
+    const value = this.props.msg.values.shift();
+    if (!value) {
+      this.props.processMsg(this.props.msg);
+      return;
+    }
+    setTimeout(() => {
+      this.setState(
+        state => ({
+          values: state.values.concat(value),
+          isTyping: true,
+        }),
+        () => this.props.onMsg()
+      );
+    }, isNaN(this.props.msg.delay) ? Math.floor(Math.random() * (800 - 1)) : this.props.msg.delay);
+  };
+
   render() {
+    if (!this.state.isTyping) {
+      return null;
+    }
     return (
       <div className="cui-sequence cui-sequence--bot">
         <div className="cui-avatar">
@@ -71,11 +58,17 @@ class MessageBot extends Component {
           {this.state.values.map(v =>
             <div className="cui-message-wrapper" key={v}>
               <div className="cui-message">
-                {v}
+                <Typist
+                  onTypingDone={this.typeNextValue}
+                  cursor={{ show: false }}
+                  avgTypingDelay={40}
+                  onCharacterTyped={this.props.onMsg}
+                >
+                  {v}
+                </Typist>
               </div>
             </div>
           )}
-          {this.state.isTyping ? <Typing /> : null}
         </div>
       </div>
     );

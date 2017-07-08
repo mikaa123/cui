@@ -6,11 +6,16 @@ const cuiConnect = (mergeProps = ctx => ctx) => Cmp =>
     static contextTypes = {
       state: PropTypes.object.isRequired,
       processMsg: PropTypes.func.isRequired,
+      addMessage: PropTypes.func.isRequired,
     };
     render() {
       const props = {
         ...this.props,
-        ...mergeProps(this.context.state, this.context.processMsg),
+        ...mergeProps(
+          this.context.state,
+          this.context.processMsg,
+          this.context.addMessage
+        ),
       };
       return <Cmp {...props} />;
     }
