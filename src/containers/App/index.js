@@ -21,8 +21,8 @@ class App extends Component {
 
   componentDidMount() {
     this.mainSequence = createChatInteraction(
-      { type: 'STEP_REF', ref: 'ideaChoice' },
-      // { type: 'STEP_REF', ref: 'intro' },
+      { type: 'STEP_REF', ref: 'intro' },
+      // { type: 'STEP_REF', ref: 'whatBringsYouHere' },
       {},
       {
         addMessage: this.addMessage,
@@ -38,8 +38,8 @@ class App extends Component {
     this.setState({ step });
   };
 
-  onValue = (msg, ref) => {
-    this.state.step.onValue(msg, ref);
+  onValue = (...params) => {
+    this.state.step.onValue(...params);
   };
 
   onChoice = (c, ref) => {

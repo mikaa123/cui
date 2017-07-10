@@ -75,8 +75,10 @@ class AskStep {
   constructor(step, state, cmds, done) {
     Object.assign(this, step, { state, cmds, done });
   }
-  onValue(value, seq) {
+  // branchout is not used here
+  onValue(value, seq, branchOut) {
     if (!seq) {
+      this.done(branchOut);
       return;
     }
     const cI = createChatInteraction(seq, this.state, this.cmds, () => {

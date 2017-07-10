@@ -9,6 +9,176 @@ const chatbot =
 const mika =
   'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg';
 
+const openQuestion = [
+  {
+    type: 'SEQUENCE',
+    objectID: 'openQuestion',
+    interactions: [
+      {
+        type: 'STEP_ASK',
+      },
+      {
+        type: 'STEP_TELL',
+        text: ['Do you have another question?'],
+        avatar: mika,
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'Yes',
+            ref: 'openQuestion',
+          },
+          {
+            val: 'Not yet',
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const datastructure = [
+  {
+    type: 'SEQUENCE',
+    objectID: 'datastructure',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          'To power this chat, there is a non-linear dialog script.',
+          "It's handled by a library that acts as an interpreter.",
+        ],
+        avatar: mika,
+      },
+      { type: 'STEP_REF', ref: 'datastructureChoice' },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'datastructureChoice',
+    interactions: [
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'Dialog structure?',
+            ref: 'nonLinearDialogue',
+          },
+          {
+            val: 'Dialog interpreter?',
+            ref: 'dialogInterpreter',
+          },
+          {
+            val: 'Continue...',
+            branchOut: true,
+          },
+        ],
+      },
+      { type: 'STEP_REF', ref: 'datastructureChoice' },
+    ],
+  },
+  {
+    type: 'SEQUENCE_QUESTION',
+    topic: 'UI/UX',
+    objectID: 'dialogInterpreter',
+    question: 'Dialog interpreter?',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          "In the dialog script, sequences and steps implement the 'interaction' interface (Composite). The dialog interpreter execute each interaction.",
+          'This will update the state used as an input by the frontend library.',
+        ],
+        avatar: mika,
+      },
+    ],
+  },
+];
+
+const uiux = [
+  {
+    type: 'SEQUENCE',
+    objectID: 'uiux',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          'The UX is heavily inspired by Typeform Conversational UI article (see here), and from most of the chat apps we interact with daily.',
+          'At the core of the UX there is Cui, the library that powers it. This library only deals with managing the visual state of the chat, not with the non-linear dialog logic.',
+        ],
+        avatar: mika,
+      },
+      { type: 'STEP_REF', ref: 'uiuxChoice' },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'uiuxChoice',
+    interactions: [
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'Technology used?',
+            ref: 'techUsed',
+          },
+          {
+            val: 'Architecture?',
+            ref: 'frontendArchitecture',
+          },
+          {
+            val: 'Continue...',
+            branchOut: true,
+          },
+        ],
+      },
+      { type: 'STEP_REF', ref: 'uiuxChoice' },
+    ],
+  },
+  {
+    type: 'SEQUENCE_QUESTION',
+    topic: 'UI/UX',
+    objectID: 'techUsed',
+    question: 'Technology used?',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          "It's built in React, but the underlying idea can be used to port it to other framework.",
+        ],
+        avatar: mika,
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'Architecture?',
+            ref: 'frontendArchitecture',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'SEQUENCE_QUESTION',
+    topic: 'UI/UX',
+    objectID: 'frontendArchitecture',
+    question: 'Architecture of the front-end?',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          'We can see it as a sort of message queue.',
+          'Messages comes in as JSON, and subcomponent handle them. Once they are done, they inform the queue so that the next message can be handled.',
+          'Because this is both simple and flexible, we can use it to create any sort of event-driven experience, such as games, interactive-fictions, story-telling platforms...',
+        ],
+        avatar: mika,
+      },
+    ],
+  },
+];
+
 const interactions = [
   {
     type: 'SEQUENCE',
@@ -24,6 +194,7 @@ const interactions = [
         type: 'STEP_TELL',
         text: ['Yes chatbot, I can see your messages...'],
         avatar: mika,
+        delay: 1000,
       },
       {
         type: 'STEP_CHOOSE',
@@ -121,19 +292,32 @@ const interactions = [
         text: [
           '...',
           "I'm so sorry about that {name}.",
-          'So hmm... What brings you here?',
+          'Hmm... What brings you here?',
         ],
         avatar: mika,
       },
+      { type: 'STEP_REF', ref: 'whatBringsYouHere' },
+      { type: 'STEP_REF', ref: 'chatbot' },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'whatBringsYouHere',
+    interactions: [
       {
         type: 'STEP_CHOOSE',
         choices: [
           {
             val: 'I want to learn more about the chatbot',
+            ref: 'chatbot',
+          },
+          {
+            val: 'I have another question...',
+            ref: 'openQuestion',
           },
         ],
       },
-      { type: 'STEP_REF', ref: 'chatbot' },
+      { type: 'STEP_REF', ref: 'whatBringsYouHere' },
     ],
   },
   {
@@ -150,13 +334,15 @@ const interactions = [
         choices: [
           {
             val: 'The idea',
-            next: 'idea',
+            ref: 'idea',
           },
           {
             val: 'The UI/UX',
+            ref: 'uiux',
           },
           {
             val: 'Non-linear dialogues',
+            ref: 'datastructure',
           },
         ],
       },
@@ -188,15 +374,15 @@ const interactions = [
         choices: [
           {
             val: 'Conversational UI?',
-            next: 'conversationalUI',
+            ref: 'conversationalUI',
           },
           {
             val: 'Non-linear dialogue?',
-            next: 'nonLinearDialogue',
+            ref: 'nonLinearDialogue',
           },
           {
-            val: 'Serverless?',
-            next: 'serverless',
+            val: 'Ask',
+            ref: 'askIdea',
           },
           {
             val: 'Continue...',
@@ -207,11 +393,21 @@ const interactions = [
       { type: 'STEP_REF', ref: 'ideaChoice' },
     ],
   },
+  {
+    type: 'STEP_ASK',
+    branchOut: true,
+    objectID: 'askIdea',
+    topic: 'idea',
+  },
+  ...uiux,
+  ...datastructure,
+  ...openQuestion,
 ];
 
 const questions = [
   {
     type: 'SEQUENCE_QUESTION',
+    topic: 'idea',
     objectID: 'conversationalUI',
     question: 'Conversational UI?',
     interactions: [
@@ -238,7 +434,7 @@ const questions = [
       {
         type: 'STEP_CHOOSE',
         choices: [
-          { val: 'What is a chatbot?', next: 'whatIsAChatBot' },
+          { val: 'What is a chatbot?', ref: 'whatIsAChatBot' },
           { val: 'Continue...', branchOut: true },
         ],
       },
@@ -246,6 +442,7 @@ const questions = [
   },
   {
     type: 'SEQUENCE_QUESTION',
+    topic: 'idea',
     objectID: 'nonLinearDialogue',
     question: 'Non-linear dialogue?',
     interactions: [
@@ -265,6 +462,8 @@ const questions = [
         type: 'STEP_TELL',
         text: [
           'The whole conversation will adapt depending on what you choose.',
+          'In this case, the whole dialog is stored as JSON in Algolia and is composed of a serie of `sequence` and `step`.',
+          'A sequence is a serie of step, and a step is an action for the UI, such as "TELL" to make me tell you things, or "CHOOSE" to let you choose between different branches.',
         ],
         avatar: mika,
       },
@@ -272,6 +471,7 @@ const questions = [
   },
   {
     type: 'SEQUENCE_QUESTION',
+    topic: 'idea',
     objectID: 'serverless',
     question: 'Serverless?',
     interactions: [
@@ -285,12 +485,13 @@ const questions = [
       },
       {
         type: 'STEP_CHOOSE',
-        choices: [{ val: 'Algolia?', next: 'algolia' }, { val: 'Continue...' }],
+        choices: [{ val: 'Algolia?', ref: 'algolia' }, { val: 'Continue...' }],
       },
     ],
   },
   {
     type: 'SEQUENCE_QUESTION',
+    topic: 'idea',
     objectID: 'algolia',
     question: 'Algolia?',
     interactions: [
@@ -305,6 +506,7 @@ const questions = [
   },
   {
     type: 'SEQUENCE_QUESTION',
+    topic: 'idea',
     objectID: 'whatIsAChatBot',
     question: 'What is a chatbot?',
     interactions: [
@@ -313,6 +515,22 @@ const questions = [
         text: [
           'Most of the time, when we say chatbot we refer to an AI that can understand the user, and have a real conversation with them',
           "It uses NLP to understand the intent of the user's message, and acts accordingly.",
+        ],
+        avatar: mika,
+      },
+    ],
+  },
+  {
+    type: 'SEQUENCE_QUESTION',
+    topic: 'idea',
+    objectID: 'whatIsAChatBot',
+    question: 'Why should the script be driven by the server?',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          'So that we can use the same engine to power other chat systems (you know, slack, facebook, etc..)',
+          "Also it's easier for mobile, no need to redeploy when the script changes.",
         ],
         avatar: mika,
       },

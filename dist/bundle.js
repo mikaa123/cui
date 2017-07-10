@@ -16292,26 +16292,36 @@ var TextInputAutocomplete = function (_Component2) {
   _createClass(TextInputAutocomplete, [{
     key: 'componentWillUpdate',
     value: function componentWillUpdate(nextProps, nextState) {
-      var _this4 = this;
-
       if (nextState.msg !== this.state.msg) {
-        var filters = ['type: SEQUENCE_QUESTION'];
-        if (nextProps.topic) {
-          filters.push('topic:' + nextProps.topic);
-        }
-        this.index.search(nextState.msg, {
-          filters: filters.join(' AND ')
-        }).then(function (res) {
-          _this4.setState({
-            steps: res.hits.slice(0, 3)
-          });
-        });
+        this.search(nextProps.topic, nextState.msg);
       }
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.search(this.props.topic, this.state.msg);
     }
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
       this.input.focus();
+    }
+  }, {
+    key: 'search',
+    value: function search(topic, msg) {
+      var _this4 = this;
+
+      var filters = ['type: SEQUENCE_QUESTION'];
+      if (topic) {
+        filters.push('topic:' + topic);
+      }
+      this.index.search(msg, {
+        filters: filters.join(' AND ')
+      }).then(function (res) {
+        _this4.setState({
+          steps: res.hits.slice(0, 3)
+        });
+      });
     }
   }, {
     key: 'render',
@@ -16346,7 +16356,18 @@ var TextInputAutocomplete = function (_Component2) {
               _this5.input = input;
             },
             autoFocus: true
-          })
+          }),
+          _react2.default.createElement(
+            'div',
+            {
+              className: 'ask-autocomplete__cancel cui-choice',
+              style: { marginLeft: 10, background: '#FC4F81' },
+              onClick: function onClick() {
+                return _this5.props.onText(null, null, true);
+              }
+            },
+            'Cancel'
+          )
         )
       );
     }
@@ -16436,8 +16457,10 @@ var App = function (_Component) {
       return _this.props.dispatch((0, _actions.addMessages)([msg]));
     }, _this.onStep = function (step) {
       _this.setState({ step: step });
-    }, _this.onValue = function (msg, ref) {
-      _this.state.step.onValue(msg, ref);
+    }, _this.onValue = function () {
+      var _this$state$step;
+
+      (_this$state$step = _this.state.step).onValue.apply(_this$state$step, arguments);
     }, _this.onChoice = function (c, ref) {
       _this.state.step.onValue(c, ref);
     }, _temp), _possibleConstructorReturn(_this, _ret);
@@ -16446,8 +16469,8 @@ var App = function (_Component) {
   _createClass(App, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.mainSequence = (0, _interactions2.default)({ type: 'STEP_REF', ref: 'ideaChoice' },
-      // { type: 'STEP_REF', ref: 'intro' },
+      this.mainSequence = (0, _interactions2.default)({ type: 'STEP_REF', ref: 'intro' },
+      // { type: 'STEP_REF', ref: 'whatBringsYouHere' },
       {}, {
         addMessage: this.addMessage,
         onStep: this.onStep
@@ -16615,13 +16638,16 @@ var AskStep = function () {
 
     Object.assign(this, step, { state: state, cmds: cmds, done: done });
   }
+  // branchout is not used here
+
 
   _createClass(AskStep, [{
     key: 'onValue',
-    value: function onValue(value, seq) {
+    value: function onValue(value, seq, branchOut) {
       var _this3 = this;
 
       if (!seq) {
+        this.done(branchOut);
         return;
       }
       var cI = createChatInteraction(seq, this.state, this.cmds, function () {
@@ -17118,7 +17144,7 @@ var Choice = function (_Component) {
         values: [c.val],
         type: 'user'
       }));
-      _this.props.onChoice(c, c.next);
+      _this.props.onChoice(c, c.ref);
       _this.props.processMsg(_this.props.currentMsg);
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
@@ -22050,7 +22076,7 @@ exports = module.exports = __webpack_require__(189)();
 
 
 // module
-exports.push([module.i, "html,\nbody {\n  margin: 0;\n  height: 100%; }\n\n.cui {\n  background: rgba(255, 255, 255, 0.5);\n  padding: 30px;\n  border-radius: 6px;\n  width: 700px;\n  font-weight: 300; }\n\n#root {\n  background: linear-gradient(145deg, #53ddec, #463d9d);\n  height: 100%; }\n\n.wrapper {\n  display: flex;\n  height: 100%;\n  justify-content: center;\n  align-items: center; }\n\n::-webkit-scrollbar {\n  display: none; }\n\n.cui-text-input input {\n  font-weight: 300; }\n", ""]);
+exports.push([module.i, "html,\nbody {\n  margin: 0;\n  height: 100%; }\n\n.cui {\n  padding: 30px;\n  border-radius: 6px;\n  width: 700px;\n  font-weight: 300; }\n\n#root {\n  background: linear-gradient(145deg, #53ddec, #463d9d);\n  height: 100%; }\n\n.wrapper {\n  display: flex;\n  height: 100%;\n  justify-content: center;\n  align-items: center; }\n\n::-webkit-scrollbar {\n  display: none; }\n\n.cui-text-input input {\n  font-weight: 300; }\n", ""]);
 
 // exports
 
@@ -22064,7 +22090,7 @@ exports = module.exports = __webpack_require__(189)();
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400);", ""]);
 
 // module
-exports.push([module.i, ".cui {\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 14px; }\n\n.cui-sequence {\n  display: flex; }\n  .cui-sequence .cui-sequence__messages {\n    width: 100%; }\n  .cui-sequence .cui-avatar {\n    align-self: flex-end;\n    margin-bottom: 10px; }\n    .cui-sequence .cui-avatar img {\n      width: 50px;\n      height: 50px;\n      border-radius: 50px; }\n  .cui-sequence .cui-typing, .cui-sequence .cui-message {\n    line-height: 30px;\n    display: inline-block;\n    color: #697782;\n    border-radius: 6px;\n    padding: 12px 24px;\n    margin-bottom: 10px;\n    background-color: #f4f4f4; }\n\n.cui-sequence.cui-sequence--bot .cui-avatar {\n  margin-right: 10px; }\n\n.cui-sequence.cui-sequence--user {\n  text-align: right; }\n\n.cui-typing .dot + .dot {\n  margin-left: 6px; }\n\n.cui-typing .dot {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  background: #a9a9a9;\n  animation: wave 1s linear infinite; }\n  .cui-typing .dot:nth-child(2) {\n    animation-delay: 200ms; }\n  .cui-typing .dot:nth-child(3) {\n    animation-delay: 400ms; }\n\n@keyframes wave {\n  0%, 60%, 100% {\n    transform: initial; }\n  30% {\n    transform: translateY(-15px); } }\n\n.cui-text-input {\n  padding-top: 1em;\n  text-align: right; }\n  .cui-text-input input {\n    font-family: \"Open Sans\", sans-serif;\n    font-size: 1em;\n    width: 50%;\n    border: 0px solid white;\n    border-bottom: 1px solid white;\n    line-height: 30px;\n    outline: none;\n    padding: 12px 24px;\n    box-sizing: border-box;\n    color: white;\n    background: rgba(255, 255, 255, 0); }\n\n.cui-panel {\n  max-height: 450px;\n  overflow: auto; }\n\n.cui-choices {\n  margin-top: 30px;\n  margin-bottom: 10px;\n  text-align: right; }\n  .cui-choices .cui-choice {\n    line-height: 30px;\n    display: inline;\n    color: white;\n    border-radius: 6px;\n    padding: 12px 24px;\n    cursor: pointer;\n    background: #3369E7; }\n  .cui-choices .cui-choice + .cui-choice {\n    margin-left: 10px; }\n", ""]);
+exports.push([module.i, ".cui {\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 14px; }\n\n.cui-sequence {\n  display: flex; }\n  .cui-sequence .cui-sequence__messages {\n    width: 100%; }\n  .cui-sequence .cui-avatar {\n    align-self: flex-end;\n    margin-bottom: 10px; }\n    .cui-sequence .cui-avatar img {\n      width: 50px;\n      height: 50px;\n      border-radius: 50px; }\n  .cui-sequence .cui-typing, .cui-sequence .cui-message {\n    line-height: 30px;\n    display: inline-block;\n    color: #697782;\n    border-radius: 6px;\n    padding: 12px 24px;\n    margin-bottom: 10px;\n    background-color: #f4f4f4; }\n\n.cui-sequence.cui-sequence--bot .cui-avatar {\n  margin-right: 10px; }\n\n.cui-sequence.cui-sequence--user {\n  text-align: right; }\n\n.cui-typing .dot + .dot {\n  margin-left: 6px; }\n\n.cui-typing .dot {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  background: #a9a9a9;\n  animation: wave 1s linear infinite; }\n  .cui-typing .dot:nth-child(2) {\n    animation-delay: 200ms; }\n  .cui-typing .dot:nth-child(3) {\n    animation-delay: 400ms; }\n\n@keyframes wave {\n  0%, 60%, 100% {\n    transform: initial; }\n  30% {\n    transform: translateY(-15px); } }\n\n.cui-text-input {\n  padding-top: 1em;\n  text-align: right; }\n  .cui-text-input input {\n    font-family: \"Open Sans\", sans-serif;\n    font-size: 1em;\n    width: 50%;\n    border: 0px solid white;\n    line-height: 30px;\n    outline: none;\n    padding: 12px 24px;\n    box-sizing: border-box;\n    color: white;\n    background: rgba(255, 255, 255, 0.1);\n    border-radius: 6px; }\n\n*::-webkit-input-placeholder {\n  color: white; }\n\n.cui-panel {\n  max-height: 450px;\n  overflow: auto; }\n\n.cui-choices {\n  margin-top: 30px;\n  margin-bottom: 10px;\n  text-align: right; }\n\n.cui-choice {\n  line-height: 30px;\n  display: inline-block;\n  color: white;\n  border-radius: 6px;\n  padding: 12px 24px;\n  cursor: pointer;\n  background: #00AEFF; }\n\n.cui-choice + .cui-choice {\n  margin-left: 10px; }\n", ""]);
 
 // exports
 

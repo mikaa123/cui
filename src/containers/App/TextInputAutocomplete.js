@@ -44,24 +44,32 @@ class TextInputAutocomplete extends Component {
 
   componentWillUpdate(nextProps, nextState) {
     if (nextState.msg !== this.state.msg) {
-      const filters = ['type: SEQUENCE_QUESTION'];
-      if (nextProps.topic) {
-        filters.push(`topic:${nextProps.topic}`);
-      }
-      this.index
-        .search(nextState.msg, {
-          filters: filters.join(' AND '),
-        })
-        .then(res => {
-          this.setState({
-            steps: res.hits.slice(0, 3),
-          });
-        });
+      this.search(nextProps.topic, nextState.msg);
     }
+  }
+
+  componentDidMount() {
+    this.search(this.props.topic, this.state.msg);
   }
 
   componentDidUpdate() {
     this.input.focus();
+  }
+
+  search(topic, msg) {
+    const filters = ['type: SEQUENCE_QUESTION'];
+    if (topic) {
+      filters.push(`topic:${topic}`);
+    }
+    this.index
+      .search(msg, {
+        filters: filters.join(' AND '),
+      })
+      .then(res => {
+        this.setState({
+          steps: res.hits.slice(0, 3),
+        });
+      });
   }
 
   handleClick = step => {
@@ -102,6 +110,13 @@ class TextInputAutocomplete extends Component {
             }}
             autoFocus
           />
+          <div
+            className="ask-autocomplete__cancel cui-choice"
+            style={{ marginLeft: 10, background: '#FC4F81' }}
+            onClick={() => this.props.onText(null, null, true)}
+          >
+            Cancel
+          </div>
         </form>
       </div>
     );

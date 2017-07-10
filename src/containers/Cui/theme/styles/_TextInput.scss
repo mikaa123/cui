@@ -6,12 +6,15 @@
     font-size: 1em;
     width: 50%;
     border: 0px solid white;
-    border-bottom: 1px solid white;
     line-height: 30px;
     outline: none;
     padding: 12px 24px;
     box-sizing: border-box;
     color: white;
-    background: rgba(255, 255, 255, 0);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
   }
+}
+*::-webkit-input-placeholder {
+    color: white;
 }

@@ -2,17 +2,17 @@
   margin-top: 30px;
   margin-bottom: 10px;
   text-align: right;
+}
 
-  .cui-choice {
-    line-height: 30px;
-    display: inline;
-    color: white;
-    border-radius: 6px;
-    padding: 12px 24px;
-    cursor: pointer;
-    background: #3369E7;
-  }
-  .cui-choice + .cui-choice {
-    margin-left: 10px;
-  }
+.cui-choice {
+  line-height: 30px;
+  display: inline-block;
+  color: white;
+  border-radius: 6px;
+  padding: 12px 24px;
+  cursor: pointer;
+  background: #00AEFF;
+}
+.cui-choice + .cui-choice {
+  margin-left: 10px;
 }

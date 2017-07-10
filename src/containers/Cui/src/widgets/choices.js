@@ -34,7 +34,7 @@ class Choice extends Component {
         type: 'user',
       })
     );
-    this.props.onChoice(c, c.next);
+    this.props.onChoice(c, c.ref);
     this.props.processMsg(this.props.currentMsg);
   };
 
