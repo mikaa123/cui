@@ -192,7 +192,7 @@ const interactions = [
       },
       {
         type: 'STEP_TELL',
-        text: ['Yes chatbot, I can see your messages...'],
+        text: ['Yes **chatbot**, I can see your messages...'],
         avatar: mika,
         delay: 1000,
       },

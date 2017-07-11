@@ -4,24 +4,31 @@ body {
   height: 100%;
 }
 
+body {
+  background: linear-gradient(145deg, #53ddec, #463d9d);
+}
+
 .cui {
-  // background: rgba(255, 255, 255, 0.5);
-  padding: 30px;
   border-radius: 6px;
-  width: 700px;
+  max-width: 700px;
   font-weight: 300;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
 }
 
 #root {
-  background: linear-gradient(145deg, #53ddec, #463d9d);
   height: 100%;
 }
 
 .wrapper {
   display: flex;
-  height: 100%;
   justify-content: center;
-  align-items: center;
+  padding: 0 30px 30px 30px;
+  box-sizing: border-box;
+  height: 100%;
 }
 
 ::-webkit-scrollbar {
@@ -31,3 +38,22 @@ body {
 .cui-text-input input {
   font-weight: 300;
 }
+
+.cui-panel {
+  max-height: inherit;
+}
+
+@media (min-width: 700px) {
+  .wrapper {
+    padding-bottom: 0;
+  }
+  .cui {
+    height: 80vh;
+  }
+}
+
+.cui-message {
+    p {
+      margin: 0;
+    }
+  }

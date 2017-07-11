@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import cuiConnect from '../core/cuiConnect';
-import cuiPanelConnect from '../core/cuiPanelConnect';
+import { cuiConnect, cuiPanelConnect } from '../Cui/src';
 import Typist from 'react-typist';
+import Remarkable from 'remarkable';
+import reactHtmlParser from 'react-html-parser';
+
+const md = new Remarkable();
 
 class MessageBot extends Component {
   static propTypes = {
@@ -64,7 +67,7 @@ class MessageBot extends Component {
                   avgTypingDelay={40}
                   onCharacterTyped={this.props.onMsg}
                 >
-                  {v}
+                  {reactHtmlParser(md.render(v))}
                 </Typist>
               </div>
             </div>
