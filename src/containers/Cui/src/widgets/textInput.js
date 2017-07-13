@@ -47,7 +47,8 @@ class TextInput extends Component {
           value={this.state.msg}
           onChange={this.handleChange}
           disabled={this.props.isBusy}
-          placeholder="Answer..."
+          autoFocus
+          placeholder="Type to answer..."
           ref={input => {
             this.input = input;
           }}

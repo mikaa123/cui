@@ -22,8 +22,8 @@ class App extends Component {
 
   componentDidMount() {
     this.mainSequence = createChatInteraction(
-      { type: 'STEP_REF', ref: 'intro' },
-      // { type: 'STEP_REF', ref: 'whatBringsYouHere' },
+      // { type: 'STEP_REF', ref: 'intro' },
+      { type: 'STEP_REF', ref: 'bored' },
       {},
       {
         addMessage: this.addMessage,

@@ -29934,16 +29934,15 @@ var AutocompleteChoice = function (_Component) {
     value: function render() {
       var _this2 = this;
 
-      return _react2.default.createElement(
-        'div',
-        {
-          className: 'ask-autocomplete cui-choice',
-          onClick: function onClick() {
-            return _this2.props.handleClick(_this2.props.step);
-          }
+      return _react2.default.createElement('div', {
+        className: 'ask-autocomplete cui-choice',
+        onClick: function onClick() {
+          return _this2.props.handleClick(_this2.props.step);
         },
-        this.props.step.question
-      );
+        dangerouslySetInnerHTML: {
+          __html: this.props.step._highlightResult.question.value
+        }
+      });
     }
   }]);
 
@@ -30172,9 +30171,9 @@ var App = function (_Component) {
   _createClass(App, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.mainSequence = (0, _interactions2.default)({ type: 'STEP_REF', ref: 'intro' },
-      // { type: 'STEP_REF', ref: 'whatBringsYouHere' },
-      {}, {
+      this.mainSequence = (0, _interactions2.default)(
+      // { type: 'STEP_REF', ref: 'intro' },
+      { type: 'STEP_REF', ref: 'bored' }, {}, {
         addMessage: this.addMessage,
         onStep: this.onStep
       });
@@ -31528,7 +31527,8 @@ var TextInput = function (_Component) {
           value: this.state.msg,
           onChange: this.handleChange,
           disabled: this.props.isBusy,
-          placeholder: 'Answer...',
+          autoFocus: true,
+          placeholder: 'Type to answer...',
           ref: function ref(input) {
             _this2.input = input;
           }
@@ -35862,7 +35862,7 @@ exports = module.exports = __webpack_require__(209)();
 exports.push([module.i, "@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400);", ""]);
 
 // module
-exports.push([module.i, ".cui {\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 14px; }\n\n.cui-sequence {\n  display: flex; }\n  .cui-sequence .cui-sequence__messages {\n    width: 100%; }\n  .cui-sequence .cui-avatar {\n    align-self: flex-end;\n    margin-bottom: 10px; }\n    .cui-sequence .cui-avatar img {\n      width: 50px;\n      height: 50px;\n      border-radius: 50px; }\n  .cui-sequence .cui-typing, .cui-sequence .cui-message {\n    line-height: 30px;\n    display: inline-block;\n    color: #697782;\n    border-radius: 6px;\n    padding: 12px 24px;\n    margin-bottom: 10px;\n    background-color: #f4f4f4; }\n    .cui-sequence .cui-typing p, .cui-sequence .cui-message p {\n      margin: 0; }\n\n.cui-sequence.cui-sequence--bot .cui-avatar {\n  margin-right: 10px; }\n\n.cui-sequence.cui-sequence--user {\n  text-align: right; }\n\n.cui-typing .dot + .dot {\n  margin-left: 6px; }\n\n.cui-typing .dot {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  background: #a9a9a9;\n  animation: wave 1s linear infinite; }\n  .cui-typing .dot:nth-child(2) {\n    animation-delay: 200ms; }\n  .cui-typing .dot:nth-child(3) {\n    animation-delay: 400ms; }\n\n@keyframes wave {\n  0%, 60%, 100% {\n    transform: initial; }\n  30% {\n    transform: translateY(-15px); } }\n\n.cui-text-input {\n  padding-top: 1em;\n  text-align: right; }\n  .cui-text-input input {\n    font-family: \"Open Sans\", sans-serif;\n    font-size: 1em;\n    width: 50%;\n    border: 0px solid white;\n    line-height: 30px;\n    outline: none;\n    padding: 12px 24px;\n    box-sizing: border-box;\n    color: white;\n    background: rgba(255, 255, 255, 0.1);\n    border-radius: 6px; }\n\n*::-webkit-input-placeholder {\n  color: white; }\n\n.cui-panel {\n  max-height: 450px;\n  overflow: auto; }\n\n.cui-choices {\n  margin-top: 30px;\n  margin-bottom: 10px;\n  text-align: right; }\n\n.cui-choice {\n  line-height: 30px;\n  display: inline-block;\n  color: white;\n  border-radius: 6px;\n  padding: 12px 24px;\n  cursor: pointer;\n  background: #00AEFF; }\n\n.cui-choice + .cui-choice {\n  margin-left: 10px; }\n", ""]);
+exports.push([module.i, ".cui {\n  font-family: \"Open Sans\", sans-serif;\n  font-size: 14px; }\n\n.cui-sequence {\n  display: flex; }\n  .cui-sequence .cui-sequence__messages {\n    width: 100%; }\n  .cui-sequence .cui-avatar {\n    align-self: flex-end;\n    margin-bottom: 10px; }\n    .cui-sequence .cui-avatar img {\n      width: 50px;\n      height: 50px;\n      border-radius: 50px; }\n  .cui-sequence .cui-typing, .cui-sequence .cui-message {\n    line-height: 30px;\n    display: inline-block;\n    color: #697782;\n    border-radius: 6px;\n    padding: 12px 24px;\n    margin-bottom: 10px;\n    background-color: #f4f4f4; }\n    .cui-sequence .cui-typing p, .cui-sequence .cui-message p {\n      margin: 0; }\n\n.cui-sequence.cui-sequence--bot .cui-avatar {\n  margin-right: 10px; }\n\n.cui-sequence.cui-sequence--user {\n  text-align: right; }\n\n.cui-typing .dot + .dot {\n  margin-left: 6px; }\n\n.cui-typing .dot {\n  display: inline-block;\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  background: #a9a9a9;\n  animation: wave 1s linear infinite; }\n  .cui-typing .dot:nth-child(2) {\n    animation-delay: 200ms; }\n  .cui-typing .dot:nth-child(3) {\n    animation-delay: 400ms; }\n\n@keyframes wave {\n  0%, 60%, 100% {\n    transform: initial; }\n  30% {\n    transform: translateY(-15px); } }\n\n.cui-text-input {\n  padding-top: 1em;\n  text-align: right; }\n  .cui-text-input input {\n    font-family: \"Open Sans\", sans-serif;\n    font-size: 1em;\n    width: 50%;\n    border: 0px solid white;\n    line-height: 30px;\n    outline: none;\n    padding: 12px 24px;\n    box-sizing: border-box;\n    color: white;\n    background: rgba(255, 255, 255, 0.1);\n    border-radius: 6px; }\n\n*::-webkit-input-placeholder {\n  color: white; }\n\n.cui-panel {\n  max-height: 450px;\n  overflow: auto; }\n\n.cui-choices {\n  margin-top: 30px;\n  text-align: right; }\n\n.cui-choice {\n  line-height: 30px;\n  display: inline-block;\n  color: white;\n  border-radius: 6px;\n  padding: 12px 24px;\n  cursor: pointer;\n  background: #00AEFF;\n  margin-bottom: 10px; }\n\n.cui-choice + .cui-choice {\n  margin-left: 10px; }\n", ""]);
 
 // exports
 

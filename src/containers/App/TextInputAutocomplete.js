@@ -14,9 +14,10 @@ class AutocompleteChoice extends Component {
       <div
         className="ask-autocomplete cui-choice"
         onClick={() => this.props.handleClick(this.props.step)}
-      >
-        {this.props.step.question}
-      </div>
+        dangerouslySetInnerHTML={{
+          __html: this.props.step._highlightResult.question.value,
+        }}
+      />
     );
   }
 }

@@ -9,6 +9,223 @@ const chatbot =
 const mika =
   'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg';
 
+const bored = [
+  {
+    type: 'SEQUENCE',
+    objectID: 'bored',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: ['Maybe you can help me find which movie I can watch tonight?'],
+        avatar: mika,
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'Hmmm sure',
+          },
+        ],
+      },
+      {
+        type: 'STEP_CHOOSE_MOVIE',
+        variable: 'movie',
+      },
+    ],
+  },
+];
+
+const intro = [
+  {
+    type: 'SEQUENCE',
+    objectID: 'intro',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: ['Testing, testing...', 'Can you see my messages?'],
+        avatar: chatbot,
+        delay: 0,
+      },
+      {
+        type: 'STEP_TELL',
+        text: ['Yes **chatbot**, I can see your messages...'],
+        avatar: mika,
+        delay: 1000,
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'I can see them too',
+          },
+        ],
+      },
+      {
+        type: 'STEP_TELL',
+        text: [
+          "Hey there! 👋 Didn't see you were online",
+          "I'm **Michael**, and I'm still debugging this chatbot!",
+          "What's your name?",
+        ],
+        avatar: mika,
+      },
+      {
+        type: 'STEP_ANSWER',
+        variable: 'name',
+      },
+      {
+        type: 'STEP_TELL',
+        text: ['Nice to m...'],
+        avatar: mika,
+      },
+      {
+        type: 'STEP_TELL',
+        text: ['Welcome **{name}**! 🎉'],
+        delay: 0,
+        avatar: chatbot,
+      },
+      {
+        type: 'STEP_TELL',
+        text: [
+          '...',
+          'Seems like I still need to work on the `interruption` module!',
+          "Anyways, **chatbot**, why don't you show **{name}** what you can do?",
+        ],
+        delay: 1000,
+        avatar: mika,
+      },
+      {
+        type: 'STEP_TELL',
+        text: [
+          'SURE!',
+          "I'm a technologically advanced bot that can make your life a lot easier. For instance, **I can tell a joke**.",
+          'I can also help you find answers to your problems by asking **why** multiple times.',
+        ],
+        delay: 1000,
+        avatar: chatbot,
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'Tell me the joke',
+          },
+          {
+            val: 'Help me with my problems',
+            ref: 'problem',
+          },
+          {
+            val: "It's ok! ☺️",
+          },
+        ],
+      },
+      { type: 'STEP_REF', ref: 'whatBringsYouHere' },
+      { type: 'STEP_REF', ref: 'chatbot' },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'joke',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: ["(I don't guarantee anything on that one...)"],
+        avatar: mika,
+      },
+      {
+        type: 'STEP_TELL',
+        text: ['{name}, do you have updog?'],
+        avatar: chatbot,
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'Updog?',
+          },
+        ],
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'What is Updog?',
+          },
+        ],
+      },
+      {
+        type: 'STEP_TELL',
+        text: ["Nuuthin dog, what's up with you?"],
+        avatar: chatbot,
+      },
+      {
+        type: 'STEP_TELL',
+        delay: 3000,
+        text: ['...', "I'm so sorry about that {name}."],
+        avatar: mika,
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: '😋',
+          },
+          {
+            val: '😐',
+          },
+          {
+            val: '😓',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'problem',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        delay: 2000,
+        text: ["What's wrong?"],
+        avatar: chatbot,
+      },
+      {
+        type: 'STEP_REF',
+        ref: 'problemWhy',
+      },
+    ],
+  },
+  {
+    type: 'SEQUENCE',
+    objectID: 'problemWhy',
+    interactions: [
+      {
+        type: 'STEP_ANSWER',
+        variable: 'pb',
+      },
+      {
+        type: 'STEP_TELL',
+        text: ['Why?'],
+        avatar: chatbot,
+      },
+      {
+        type: 'STEP_CHOOSE',
+        choices: [
+          {
+            val: 'Answer',
+            ref: 'problemWhy',
+          },
+          {
+            val: 'Nevermind',
+          },
+        ],
+      },
+    ],
+  },
+  ...bored,
+];
+
 const openQuestion = [
   {
     type: 'SEQUENCE',
@@ -180,130 +397,16 @@ const uiux = [
 ];
 
 const interactions = [
-  {
-    type: 'SEQUENCE',
-    objectID: 'intro',
-    interactions: [
-      {
-        type: 'STEP_TELL',
-        text: ['Testing, testing...', 'Can you see my messages?'],
-        avatar: chatbot,
-        delay: 0,
-      },
-      {
-        type: 'STEP_TELL',
-        text: ['Yes **chatbot**, I can see your messages...'],
-        avatar: mika,
-        delay: 1000,
-      },
-      {
-        type: 'STEP_CHOOSE',
-        choices: [
-          {
-            val: 'I can see them too',
-          },
-        ],
-      },
-      {
-        type: 'STEP_TELL',
-        text: [
-          "Hey there! Didn't see you were online",
-          "I'm Michael, and I'm still debugging this chatbot!",
-          "What's your name?",
-        ],
-        avatar: mika,
-      },
-      {
-        type: 'STEP_ANSWER',
-        variable: 'name',
-      },
-      {
-        type: 'STEP_TELL',
-        text: ['Nice to m...'],
-        avatar: mika,
-      },
-      {
-        type: 'STEP_TELL',
-        text: ['Welcome {name}!'],
-        delay: 0,
-        avatar: chatbot,
-      },
-      {
-        type: 'STEP_TELL',
-        text: [
-          '...',
-          'Seems like I still need to work on the "interruption" module!',
-          "Anyways, chatbot, why don't you show {name} what you can do?",
-        ],
-        delay: 1000,
-        avatar: mika,
-      },
-      {
-        type: 'STEP_TELL',
-        text: [
-          'SURE!',
-          "I'm a technologically advanced bot that can make your life a lot easier. For instance, I can tell a joke.",
-        ],
-        delay: 1000,
-        avatar: chatbot,
-      },
-      {
-        type: 'STEP_CHOOSE',
-        choices: [
-          {
-            val: 'Tell me the joke',
-          },
-        ],
-      },
-      {
-        type: 'STEP_TELL',
-        text: ["I don't guarantee any SLA on that one..."],
-        avatar: mika,
-      },
-      {
-        type: 'STEP_TELL',
-        text: ['{name}, do you have updog?'],
-        avatar: chatbot,
-      },
-      {
-        type: 'STEP_CHOOSE',
-        choices: [
-          {
-            val: 'Updog?',
-          },
-        ],
-      },
-      {
-        type: 'STEP_CHOOSE',
-        choices: [
-          {
-            val: 'What is Updog?',
-          },
-        ],
-      },
-      {
-        type: 'STEP_TELL',
-        text: ["Nuuthin dog, what's up with you?"],
-        avatar: chatbot,
-      },
-      {
-        type: 'STEP_TELL',
-        delay: 3000,
-        text: [
-          '...',
-          "I'm so sorry about that {name}.",
-          'Hmm... What brings you here?',
-        ],
-        avatar: mika,
-      },
-      { type: 'STEP_REF', ref: 'whatBringsYouHere' },
-      { type: 'STEP_REF', ref: 'chatbot' },
-    ],
-  },
+  ...intro,
   {
     type: 'SEQUENCE',
     objectID: 'whatBringsYouHere',
     interactions: [
+      {
+        type: 'STEP_TELL',
+        text: ['What brings you here **{name}**?'],
+        avatar: mika,
+      },
       {
         type: 'STEP_CHOOSE',
         choices: [
@@ -312,8 +415,12 @@ const interactions = [
             ref: 'chatbot',
           },
           {
-            val: 'I have another question...',
+            val: 'I have some questions...',
             ref: 'openQuestion',
+          },
+          {
+            val: "I'm bored",
+            ref: 'bored',
           },
         ],
       },
