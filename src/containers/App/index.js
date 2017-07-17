@@ -6,6 +6,7 @@ import { Cui, CuiPanel } from '../Cui/src';
 import { Choices, TextInput } from '../Cui/src/widgets';
 import MessagesTyping from './messagesTyping';
 import TextInputAutocomplete from './TextInputAutocomplete';
+import MovieFinder from './MovieFinder';
 import '../Cui/theme/style.scss';
 import './style.scss';
 import createChatInteraction from './interactions';
@@ -22,8 +23,8 @@ class App extends Component {
 
   componentDidMount() {
     this.mainSequence = createChatInteraction(
-      // { type: 'STEP_REF', ref: 'intro' },
-      { type: 'STEP_REF', ref: 'bored' },
+      { type: 'STEP_REF', ref: 'intro' },
+      // { type: 'STEP_REF', ref: 'bored' },
       {},
       {
         addMessage: this.addMessage,
@@ -63,6 +64,15 @@ class App extends Component {
           topic={this.state.step.topic}
         />
       );
+    } else if (this.state.step.type === 'STEP_CHOOSE_MOVIE') {
+      return (
+        <MovieFinder
+          appID="latency"
+          apiKey="6be0576ff61c053d5f9a3225e2a90f76"
+          indexName="movies"
+          onValue={this.onValue}
+        />
+      );
     }
     return null;
   }
@@ -76,6 +86,9 @@ class App extends Component {
             <Choices onChoice={this.onChoice} />
           </CuiPanel>
           {this.renderInput()}
+          {this.state.step && this.state.step.type !== 'STEP_CHOOSE_MOVIE'
+            ? <div className="push" />
+            : null}
         </Cui>
       </div>
     );

@@ -7,6 +7,21 @@ function getName(name) {
   return index.getObject(name);
 }
 
+class ChooseMovieStep {
+  constructor(step, state, cmds, done) {
+    Object.assign(this, step, { state, cmds, done });
+  }
+  onValue(choice) {
+    if (this.variable) {
+      this.state[this.variable] = choice;
+    }
+    this.done();
+  }
+  process() {
+    this.cmds.onStep(this);
+  }
+}
+
 class ChooseStep {
   constructor(step, state, cmds, done) {
     if (!step.choices) {
@@ -16,7 +31,7 @@ class ChooseStep {
   }
   onValue(choice, ref) {
     if (this.variable) {
-      this.user[this.variable] = choice;
+      this.state[this.variable] = choice;
     }
     if (!ref) {
       this.done(choice.branchOut);
@@ -186,6 +201,10 @@ function createChatInteraction(interaction, state, cmds, done) {
 
     case 'STEP_CHOOSE':
       newInteraction = new ChooseStep(interaction, state, cmds, done);
+      break;
+
+    case 'STEP_CHOOSE_MOVIE':
+      newInteraction = new ChooseMovieStep(interaction, state, cmds, done);
       break;
 
     case 'STEP_ASK':

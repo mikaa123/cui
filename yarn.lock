@@ -52,7 +52,17 @@ ajv@^4.7.0:
     co "^4.6.0"
     json-stable-stringify "^1.0.1"
 
-algoliasearch@^3.24.0:
+algoliasearch-helper@2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/algoliasearch-helper/-/algoliasearch-helper-2.19.0.tgz#cdc8c623720be8ff2b97216d1e57e02d9642f5a5"
+  dependencies:
+    events "^1.1.0"
+    lodash "^4.13.1"
+    marked "^0.3.5"
+    qs "^6.2.1"
+    util "^0.10.3"
+
+algoliasearch@^3.21.1, algoliasearch@^3.24.0:
   version "3.24.0"
   resolved "https://registry.yarnpkg.com/algoliasearch/-/algoliasearch-3.24.0.tgz#d0a6ac2963b781d2fb059a3a853fe18765673346"
   dependencies:
@@ -2871,7 +2881,7 @@ lodash.uniq@^4.3.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@^4.0.0, lodash@^4.14.0, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0:
+lodash@^4.0.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -2910,6 +2920,10 @@ macaddress@^0.2.8:
 map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
+
+marked@^0.3.5:
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.6.tgz#b2c6c618fccece4ef86c4fc6cb8a7cbf5aeda8d7"
 
 math-expression-evaluator@^1.2.14:
   version "1.2.16"
@@ -3734,7 +3748,7 @@ qs@6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.0.tgz#3b7848c03c2dece69a9522b0fae8c4126d745f3b"
 
-qs@^6.3.0, qs@~6.3.0:
+qs@^6.2.1, qs@^6.3.0, qs@~6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.0.tgz#f403b264f23bc01228c74131b407f18d5ea5d442"
 
@@ -3814,6 +3828,16 @@ react-html-parser@^1.0.3:
   resolved "https://registry.yarnpkg.com/react-html-parser/-/react-html-parser-1.0.3.tgz#28358f0cc11eee3bf490f8ab6c9c31bd2c806790"
   dependencies:
     htmlparser2 "^3.9.0"
+
+react-instantsearch@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/react-instantsearch/-/react-instantsearch-4.0.8.tgz#5a6d40e9fc8c54a5230e752c03cded0a2cb78353"
+  dependencies:
+    algoliasearch "^3.21.1"
+    algoliasearch-helper "2.19.0"
+    classnames "^2.2.5"
+    lodash "^4.17.4"
+    prop-types "^15.5.8"
 
 react-redux@^5.0.2:
   version "5.0.2"

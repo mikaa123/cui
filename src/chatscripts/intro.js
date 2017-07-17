@@ -9,6 +9,27 @@ const chatbot =
 const mika =
   'https://pbs.twimg.com/profile_images/669557251120721921/3bya0idT_400x400.jpg';
 
+const search = [
+  {
+    type: 'SEQUENCE',
+    objectID: 'search',
+    interactions: [
+      {
+        type: 'STEP_TELL',
+        text: [
+          "It's also possible to search within the chat",
+          'For example, let me bring up a search sequence...',
+        ],
+        avatar: mika,
+      },
+      {
+        type: 'STEP_REF',
+        ref: 'bored',
+      },
+    ],
+  },
+];
+
 const bored = [
   {
     type: 'SEQUENCE',
@@ -30,6 +51,11 @@ const bored = [
       {
         type: 'STEP_CHOOSE_MOVIE',
         variable: 'movie',
+      },
+      {
+        type: 'STEP_TELL',
+        text: ['{movie}? Interesting'],
+        avatar: mika,
       },
     ],
   },
@@ -109,13 +135,14 @@ const intro = [
         choices: [
           {
             val: 'Tell me the joke',
+            ref: 'joke',
           },
           {
             val: 'Help me with my problems',
             ref: 'problem',
           },
           {
-            val: "It's ok! ☺️",
+            val: 'Nevermind...',
           },
         ],
       },
@@ -451,6 +478,10 @@ const interactions = [
             val: 'Non-linear dialogues',
             ref: 'datastructure',
           },
+          {
+            val: 'Search UI',
+            ref: 'search',
+          },
         ],
       },
       { type: 'STEP_REF', ref: 'chatbot' },
@@ -509,6 +540,7 @@ const interactions = [
   ...uiux,
   ...datastructure,
   ...openQuestion,
+  ...search,
 ];
 
 const questions = [
